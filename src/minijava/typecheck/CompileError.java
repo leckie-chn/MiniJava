@@ -41,5 +41,5 @@ public class CompileError {
 		Info.add(String.format("At Line %d: %s", e.GetID().GetLineNo(), errorstr));
 	}
 	
-	
+
 }

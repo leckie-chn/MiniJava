@@ -1,6 +1,8 @@
 package minijava.symboltable;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import minijava.typecheck.CompileError;
 
@@ -14,6 +16,10 @@ public class MClass extends MType {
 	
 	private MClass ParentClassRef = null;
 	
+	private boolean MethodBinded = false;
+	
+	private boolean VarBinded = false;
+	
 	public MClass() {
 		super(TypeEnum.M_CLASS);
 		// TODO Auto-generated constructor stub
@@ -25,47 +31,100 @@ public class MClass extends MType {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void InsertMethod(MMethod _method) throws Exception{
+	public void InsertMethod(MMethod _method) {
 		if (this.MethodTable.containsKey(_method.GetID().GetID())){
-			CompileError.DupDefinitionError(_method, this.MethodTable.get(_method.GetID().GetID()));
+			try {
+				CompileError.DupDefinitionError(_method, this.MethodTable.get(_method.GetID().GetID()));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
+			return;
 		}
 		this.MethodTable.put(_method.GetID().GetID(), _method);
 	}
 	
-	public void InsertVar(MVar _variable) throws Exception{
+	public void InsertVar(MVar _variable) {
 		if (this.VarTable.containsKey(_variable.GetID().GetID())){
-			CompileError.DupDefinitionError(_variable, this.MethodTable.get(_variable.GetID().GetID()));
+			try {
+				CompileError.DupDefinitionError(_variable, this.MethodTable.get(_variable.GetID().GetID()));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
+			return;
 		}
 		this.VarTable.put(_variable.GetID().GetID(), _variable);
 	}
-
+	
+	// bind method of this and parent class methods
+	// check for incorrect override
+	private void BindMethod(){
+		if (this.MethodBinded) return;
+		if (this.ParentClassRef != null){
+			this.ParentClassRef.BindMethod();
+		}
+		for (Map.Entry<String, MMethod> entry : this.ParentClassRef.MethodTable.entrySet()){
+			if (this.MethodTable.containsKey(entry.getKey())){
+				// override
+				if (entry.getValue().equals(this.MethodTable.get(entry.getKey()))){
+					try {
+						CompileError.DupDefinitionError(this.MethodTable.get(entry.getKey()), entry.getValue());
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						e.printStackTrace();
+					}
+				}
+			}
+			else {
+				// inheritance
+				this.MethodTable.put(entry.getKey(), entry.getValue());
+			}
+		}
+		this.MethodBinded = true;
+	}
+	
+	// bind variable of this and parent variables
+	
+	private void BindVar(){
+		if (this.VarBinded) return;
+		if (this.ParentClassRef != null){
+			this.ParentClassRef.BindVar();
+		}
+		for (Map.Entry<String, MVar> entry : this.ParentClassRef.VarTable.entrySet()){
+			if (this.VarTable.containsKey(entry.getKey())){
+				// override
+				if (entry.getValue().GetVarType() != this.VarTable.get(entry.getKey()).GetVarType()){
+					try {
+						CompileError.DupDefinitionError(this.VarTable.get(entry.getKey()), entry.getValue());
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						e.printStackTrace();
+					}
+				}
+			}
+			else {
+				this.VarTable.put(entry.getKey(), entry.getValue());
+			}
+		}
+		this.VarBinded = true;
+	}
 	
 	public MMethod GetMethod(MIdentifier _ID){
-		String MethodName = _ID.GetID();
-		MClass MasterClass = this;
-		MMethod RetMethod = null;
-		while (MasterClass != null){
-			RetMethod = MasterClass.MethodTable.get(MethodName);
-			if (RetMethod != null)
-				return RetMethod;
-			MasterClass = MasterClass.ParentClassRef;
+		if (!this.MethodTable.containsKey(_ID.GetID())){
+			CompileError.UndefinedError(new MMethod(_ID, null));
+			return null;
 		}
-		CompileError.UndefinedError(new MMethod(_ID));
-		return null;
+		
+		return this.MethodTable.get(_ID.GetID());
 	}
 	
 	public MVar GetVar(MIdentifier _ID){
-		String VarName = _ID.GetID();
-		MClass MasterClass = this;
-		MVar RetVar = null;
-		while (MasterClass != null){
-			RetVar = MasterClass.VarTable.get(VarName);
-			if (RetVar != null)
-				return RetVar;
-			MasterClass = MasterClass.ParentClassRef;
+		if (!this.VarTable.containsKey(_ID.GetID())){
+			CompileError.UndefinedError(new MVar(_ID));
+			return null;
 		}
-		CompileError.UndefinedError(new MMethod(_ID));
-		return null;
+		return this.VarTable.get(_ID.GetID());
 	}
 	
 	public void SetParent(MIdentifier _ParentID){
@@ -76,7 +135,10 @@ public class MClass extends MType {
 		return this.ParentClassRef;
 	}
 	
-	public void BindParent(){
+	/**
+	 * @round 1.5, bind stage
+	 */
+	private void BindParent(){
 		// check for inheritance loop
 		MClass RootClass = (MClass) MType.GetTypeByID(this.ParentClassID);
 		this.ParentClassRef = RootClass;
@@ -89,5 +151,29 @@ public class MClass extends MType {
 		}
 	}
 	
+	// basic, parent class name, parent hashcode
+	public String SymbolContent(){
+		String ContentStr = String.format("%s\t%s@%d\n", super.SymbolContent(), this.ParentClassID.GetID(), this.ParentClassRef.hashCode());
+		Collection<MMethod> Methods = this.MethodTable.values();
+		for (MMethod method : Methods){
+			ContentStr += method.SymbolContent();
+		}
+		Collection<MVar> Variables = this.VarTable.values();
+		for (MVar variable : Variables){
+			ContentStr += variable.SymbolContent();
+		}
+		return ContentStr;
+	}
 	
+	public void Bind(){
+		this.BindParent();
+		for (Map.Entry<String, MMethod> entry : this.MethodTable.entrySet()){
+			entry.getValue().Bind();
+		}
+		for (Map.Entry<String, MVar> entry : this.VarTable.entrySet()){
+			entry.getValue().Bind();
+		}
+		this.BindMethod();
+		this.BindVar();
+	}
 }

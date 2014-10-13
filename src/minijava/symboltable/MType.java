@@ -1,5 +1,6 @@
 package minijava.symboltable;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import minijava.typecheck.CompileError;
@@ -61,5 +62,17 @@ public class MType {
 			minijava.typecheck.CompileError.DupDefinitionError(_NewClass, MType.RootSymbolTable.get(_NewClass.GetID().GetID()));
 		}
 		MType.RootSymbolTable.put(_NewClass.GetID().GetID(), _NewClass);
+	}
+	
+	public static void RootSymbolTableDump(){
+		Collection<MType> Symbols = MType.RootSymbolTable.values();
+		for (MType SymbolItem : Symbols){
+			System.out.println( SymbolItem.SymbolContent());
+		}
+	}
+	
+	// format: address, id string, id lineno, actual type 
+	public String SymbolContent(){
+		return String.format("%d\t%s\t%d\t%s", this.hashCode(), this.Identifier.GetID(), this.Identifier.GetLineNo(), this.Type);
 	}
 }
