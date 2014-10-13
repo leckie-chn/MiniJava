@@ -64,9 +64,9 @@ public class MClass extends MType {
 	// check for incorrect override
 	private void BindMethod(){
 		if (this.MethodBinded) return;
-		if (this.ParentClassRef != null){
-			this.ParentClassRef.BindMethod();
-		}
+		this.MethodBinded = true;
+		if (this.ParentClassRef == null) return;
+		this.ParentClassRef.BindMethod();
 		for (Map.Entry<String, MMethod> entry : this.ParentClassRef.MethodTable.entrySet()){
 			if (this.MethodTable.containsKey(entry.getKey())){
 				// override
@@ -84,16 +84,16 @@ public class MClass extends MType {
 				this.MethodTable.put(entry.getKey(), entry.getValue());
 			}
 		}
-		this.MethodBinded = true;
+		
 	}
 	
 	// bind variable of this and parent variables
 	
 	private void BindVar(){
 		if (this.VarBinded) return;
-		if (this.ParentClassRef != null){
-			this.ParentClassRef.BindVar();
-		}
+		this.VarBinded = true;
+		if (this.ParentClassRef == null)	return;
+		this.ParentClassRef.BindVar();
 		for (Map.Entry<String, MVar> entry : this.ParentClassRef.VarTable.entrySet()){
 			if (this.VarTable.containsKey(entry.getKey())){
 				// override
@@ -110,7 +110,7 @@ public class MClass extends MType {
 				this.VarTable.put(entry.getKey(), entry.getValue());
 			}
 		}
-		this.VarBinded = true;
+		
 	}
 	
 	public MMethod GetMethod(MIdentifier _ID){
@@ -143,6 +143,7 @@ public class MClass extends MType {
 	 */
 	private void BindParent(){
 		// check for inheritance loop
+		if (this.ParentClassID == null) return;
 		MClass RootClass = (MClass) MType.GetTypeByID(this.ParentClassID);
 		this.ParentClassRef = RootClass;
 		while (RootClass != null){
@@ -156,15 +157,32 @@ public class MClass extends MType {
 	
 	// basic, parent class name, parent hashcode
 	public String SymbolContent(){
-		String ContentStr = String.format("%s\t%s@%d\n", super.SymbolContent(), this.ParentClassID.GetID(), this.ParentClassRef.hashCode());
-		Collection<MMethod> Methods = this.MethodTable.values();
-		for (MMethod method : Methods){
-			ContentStr += method.SymbolContent();
+		String ContentStr;
+		if (this.ParentClassRef != null)
+			ContentStr = String.format("%s\t%s@%x\n", super.SymbolContent(), this.ParentClassID.GetID(), this.ParentClassRef.hashCode());
+		else
+			ContentStr = String.format("%s\tNo Parent Class\n", super.SymbolContent());
+		
+		if (this.MethodTable.isEmpty()){
+			ContentStr += "No Member Method\n";
+		}else{
+			ContentStr += "Member Method List:\n";
+			Collection<MMethod> Methods = this.MethodTable.values();
+			for (MMethod method : Methods){
+				ContentStr += method.SymbolContent();
+			}
 		}
-		Collection<MVar> Variables = this.VarTable.values();
-		for (MVar variable : Variables){
-			ContentStr += variable.SymbolContent();
+		
+		if (this.VarTable.isEmpty()){
+			ContentStr += "No Member Variable\n";
+		}else{
+			ContentStr += "Member Variable List:\n";
+			Collection<MVar> Variables = this.VarTable.values();
+			for (MVar variable : Variables){
+				ContentStr += variable.SymbolContent();
+			}
 		}
+		
 		return ContentStr;
 	}
 	

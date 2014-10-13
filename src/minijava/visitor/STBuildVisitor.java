@@ -105,10 +105,11 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    * f5 -> "}"
 	    */
 	   public MType visit(ClassDeclaration n, MType argu) {
-		   MIdentifier ClassID = n.accept(this, argu).GetID();
+		   MIdentifier ClassID = n.f1.accept(this, argu).GetID();
 		   MClass SelfRef = new MClass(ClassID);
 		   n.f3.accept(this, SelfRef);
 		   n.f4.accept(this, SelfRef);
+		   MType.InsertClass(SelfRef);
 		   return null;
 	   }
 
@@ -123,12 +124,13 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    * f7 -> "}"
 	    */
 	   public MType visit(ClassExtendsDeclaration n, MType argu) {
-		   MIdentifier ClassID = n.accept(this, argu).GetID();
+		   MIdentifier ClassID = n.f1.accept(this, argu).GetID();
 		   MIdentifier ParentID = n.f3.accept(this, argu).GetID();
 		   MClass SelfRef = new MClass(ClassID);
 		   SelfRef.SetParent(ParentID);
 		   n.f5.accept(this, SelfRef);
 		   n.f6.accept(this, SelfRef);
+		   MType.InsertClass(SelfRef);
 		   return null;
 	   }
 
@@ -174,6 +176,7 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 		   MType RetType = n.f1.accept(this, context);
 		   MIdentifier MethodID = n.f2.accept(this, context).GetID();
 		   MMethod NewMethod = new MMethod(MethodID, context);
+		   NewMethod.SetRetType(RetType.GetID());
 		   context.InsertMethod(NewMethod);
 		   n.f4.accept(this, NewMethod);
 		   n.f7.accept(this, NewMethod);

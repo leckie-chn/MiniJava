@@ -14,12 +14,13 @@ public class Main {
  
     public static void main(String[] args) {
     	try {
-    		FileInputStream fls = new FileInputStream("tests\\tests00.java");
+    		FileInputStream fls = new FileInputStream("tests\\test01.java");
     		System.setIn(fls);
     		Node root = new MiniJavaParser(System.in).Goal();
 
     		//Traverse the Abstract Grammar Tree
     		root.accept(new STBuildVisitor(), null);
+    		MType.RootBind();
     		MType.RootSymbolTableDump();
     	}
     	catch(TokenMgrError e){

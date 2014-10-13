@@ -48,9 +48,9 @@ public class MType {
 		private static final long serialVersionUID = 1L;
 
 	{
-		put("int", new MType(TypeEnum.M_INT));
-		put("boolean", new MType(TypeEnum.M_BOOLEAN));
-		put("int[]", new MType(TypeEnum.M_ARRAY));
+		put("int", new MType(TypeEnum.M_INT, new MIdentifier("int", -1)));
+		put("boolean", new MType(TypeEnum.M_BOOLEAN, new MIdentifier("boolean", -1)));
+		put("int[]", new MType(TypeEnum.M_ARRAY, new MIdentifier("int[]", -1)));
 	}};
 
 	public static MType GetTypeByID(MIdentifier _ID){
@@ -60,9 +60,14 @@ public class MType {
 		return MType.RootSymbolTable.get(_ID.GetID());
 	}
 	
-	public static void InsertClass(MClass _NewClass) throws Exception{
+	public static void InsertClass(MClass _NewClass) {
 		if (MType.RootSymbolTable.containsKey(_NewClass.GetID().GetID())){
-			minijava.typecheck.CompileError.DupDefinitionError(_NewClass, MType.RootSymbolTable.get(_NewClass.GetID().GetID()));
+			try {
+				CompileError.DupDefinitionError(_NewClass, MType.RootSymbolTable.get(_NewClass.GetID().GetID()));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
 		}
 		MType.RootSymbolTable.put(_NewClass.GetID().GetID(), _NewClass);
 	}
@@ -76,7 +81,7 @@ public class MType {
 	
 	// format: address, id string, id lineno, actual type 
 	public String SymbolContent(){
-		return String.format("%d\t%s\t%d\t%s", this.hashCode(), this.Identifier.GetID(), this.Identifier.GetLineNo(), this.Type);
+		return String.format("%x\t%s\t%d\t%s", this.hashCode(), this.Identifier.GetID(), this.Identifier.GetLineNo(), this.Type);
 	}
 	
 	public void Bind(){

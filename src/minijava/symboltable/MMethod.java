@@ -93,15 +93,24 @@ public class MMethod extends MType {
 	
 	// basic, return type, \n paralist \n varlist
 	public String SymbolContent(){
-		String Content = String.format("\t%s\t%s@%d\n", super.SymbolContent(), this.RetTypeRef.GetID().GetID(), this.RetTypeRef.hashCode());
-		Content += "\tParameter List:";
-		for (MVar param : this.ParaTypeList){
-			Content += String.format("\t\t%s", param.SymbolContent());
+		String Content = String.format("\t%s\t%s@%x\n", super.SymbolContent(), this.RetTypeRef.GetID().GetID(), this.RetTypeRef.hashCode());
+		if (this.ParaTypeList.isEmpty())
+			Content += "\tNull Parameter List\n";
+		else{
+			Content += "\tParameter List:\n";
+			for (MVar param : this.ParaTypeList){
+				Content += String.format("\t\t%s", param.SymbolContent());
+			}
 		}
-		Content += "\tTemporary Variable List:";
-		for (Map.Entry<String, MVar> varentry : this.VarTable.entrySet()){
-			Content += String.format("\t\t%s", varentry.getValue().SymbolContent());
+		if (this.VarTable.isEmpty())
+			Content += "\tNull Temporary Varible List\n";
+		else{
+			Content += "\tTemporary Variable List:";
+			for (Map.Entry<String, MVar> varentry : this.VarTable.entrySet()){
+				Content += String.format("\t\t%s", varentry.getValue().SymbolContent());
+			}
 		}
+		
 		return Content;
 	}
 	
