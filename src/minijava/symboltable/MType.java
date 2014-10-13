@@ -2,6 +2,7 @@ package minijava.symboltable;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import minijava.typecheck.CompileError;
 
@@ -11,6 +12,8 @@ public class MType {
 	private MIdentifier Identifier;
 	
 	private final TypeEnum Type;
+	
+	public static MMethod MainMethod = null;
 	
 	public MType(TypeEnum _type){
 		this.Type = _type;
@@ -75,4 +78,15 @@ public class MType {
 	public String SymbolContent(){
 		return String.format("%d\t%s\t%d\t%s", this.hashCode(), this.Identifier.GetID(), this.Identifier.GetLineNo(), this.Type);
 	}
+	
+	public void Bind(){
+		// do nothing
+	}
+	
+	public static void RootBind(){
+		for (Map.Entry<String, MType> entry : MType.RootSymbolTable.entrySet()){
+			entry.getValue().Bind();
+		}
+	}
+	
 }

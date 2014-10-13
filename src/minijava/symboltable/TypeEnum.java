@@ -1,7 +1,7 @@
 package minijava.symboltable;
 
 public enum TypeEnum {
-	M_INT, M_BOOLEAN, M_ARRAY, M_CLASS, M_METHOD, M_VARIABLE;
+	M_INT, M_BOOLEAN, M_ARRAY, M_CLASS, M_METHOD, M_VARIABLE, M_BASIC;
 	public String toString(){
 		switch(this){
 		case M_INT: return "int";
@@ -10,6 +10,7 @@ public enum TypeEnum {
 		case M_CLASS: return "class";
 		case M_METHOD: return "method";
 		case M_VARIABLE: return "variable";
+		case M_BASIC:	return "basic";
 		}
 		return null;
 	}

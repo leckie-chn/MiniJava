@@ -1,25 +1,26 @@
 package minijava.typecheck;
 
+import java.io.FileInputStream;
+
 import minijava.MiniJavaParser;
 import minijava.ParseException;
 import minijava.TokenMgrError;
+import minijava.symboltable.MType;
 import minijava.syntaxtree.Node;
-import minijava.visitor.GJDepthFirst;
+import minijava.visitor.STBuildVisitor;
 
 
 public class Main { 
  
     public static void main(String[] args) {
     	try {
+    		FileInputStream fls = new FileInputStream("tests\\tests00.java");
+    		System.setIn(fls);
     		Node root = new MiniJavaParser(System.in).Goal();
-    		/*
-    		 * TODO: Implement your own Visitors and other classes.
-    		 * 
-    		 */
-    		GJDepthFirst v = new GJDepthFirst<Object,Object>() {
-    		};
+
     		//Traverse the Abstract Grammar Tree
-    		root.accept(v,null);
+    		root.accept(new STBuildVisitor(), null);
+    		MType.RootSymbolTableDump();
     	}
     	catch(TokenMgrError e){
     		//Handle Lexical Errors

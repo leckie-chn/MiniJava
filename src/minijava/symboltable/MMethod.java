@@ -21,7 +21,6 @@ public class MMethod extends MType {
 	public MMethod(MClass _master) {
 		super(TypeEnum.M_METHOD);
 		this.MasterClass = _master;
-		// TODO Auto-generated constructor stub
 	}
 
 	public MMethod(MIdentifier _ID, MClass _master) {
@@ -31,7 +30,6 @@ public class MMethod extends MType {
 	public MMethod(MMethod _object) {
 		super(_object);
 		this.MasterClass = _object.MasterClass;
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void SetRetType(MIdentifier _ID){

@@ -26,6 +26,9 @@ public class MClass extends MType {
 		
 	}
 
+	public MClass(MIdentifier _ID){
+		super(TypeEnum.M_CLASS, _ID);
+	}
 	public MClass(MClass _object) {
 		super(_object);
 		// TODO Auto-generated constructor stub
