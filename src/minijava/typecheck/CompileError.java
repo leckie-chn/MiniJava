@@ -41,5 +41,23 @@ public class CompileError {
 		Info.add(String.format("At Line %d: %s", e.GetID().GetLineNo(), errorstr));
 	}
 	
+	public static void ExprMisMatchError(MType e, String idealType){
+		String errorstr = String.format("Expression Type Mismatch error; should be %s", idealType);
+		Info.add(String.format("At Line %d: %s", e.GetID().GetLineNo(), errorstr));
+	}
+	
+	public static void CommonError(MIdentifier _errorID){
+		Info.add(String.format("At Line %d: %s", _errorID.GetLineNo(), _errorID.GetID()));
+	}
+	
+	public static void Show(){
+		if (Info.isEmpty()){
+			System.out.println("Compile Success!");
+		} else {
+			for (String errstr : Info){
+				System.out.println(errstr);
+			}
+		}
+	}
 
 }

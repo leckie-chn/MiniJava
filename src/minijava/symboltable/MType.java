@@ -38,6 +38,10 @@ public class MType {
 		this.Identifier = _ID;
 	}
 	
+	public String toString(){
+		return this.Type.toString();
+	}
+	
 	public MIdentifier GetID(){
 		return this.Identifier;
 	}
@@ -55,7 +59,8 @@ public class MType {
 
 	public static MType GetTypeByID(MIdentifier _ID){
 		if (!MType.RootSymbolTable.containsKey(_ID.GetID())){
-			CompileError.UndefinedError(new MType(TypeEnum.M_CLASS, _ID));			
+			CompileError.UndefinedError(new MType(TypeEnum.M_CLASS, _ID));
+			return null;
 		}
 		return MType.RootSymbolTable.get(_ID.GetID());
 	}
@@ -92,6 +97,13 @@ public class MType {
 		for (Map.Entry<String, MType> entry : MType.RootSymbolTable.entrySet()){
 			entry.getValue().Bind();
 		}
+	}
+	
+	// used in parameter match check
+	public boolean equals(MType _target){
+		if (this.Type != _target.Type) 	return false;
+		if (this.Type == TypeEnum.M_CLASS && !this.Identifier.GetID().equals(_target.Identifier.GetID())) return false;
+		return true;
 	}
 	
 }

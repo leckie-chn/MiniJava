@@ -34,6 +34,10 @@ public class MClass extends MType {
 		// TODO Auto-generated constructor stub
 	}
 	
+	public String toString(){
+		return this.GetID().GetID();
+	}
+	
 	public void InsertMethod(MMethod _method) {
 		if (this.MethodTable.containsKey(_method.GetID().GetID())){
 			try {
@@ -70,7 +74,7 @@ public class MClass extends MType {
 		for (Map.Entry<String, MMethod> entry : this.ParentClassRef.MethodTable.entrySet()){
 			if (this.MethodTable.containsKey(entry.getKey())){
 				// override
-				if (entry.getValue().equals(this.MethodTable.get(entry.getKey()))){
+				if (!entry.getValue().equals(this.MethodTable.get(entry.getKey()))){
 					try {
 						CompileError.DupDefinitionError(this.MethodTable.get(entry.getKey()), entry.getValue());
 					} catch (Exception e) {

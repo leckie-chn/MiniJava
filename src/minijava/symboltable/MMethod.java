@@ -12,7 +12,7 @@ public class MMethod extends MType {
 	
 	private MType RetTypeRef = null;
 	
-	private final MClass MasterClass;
+	public final MClass MasterClass;
 	
 	public Vector<MVar> ParaTypeList = new Vector<MVar>();
 	

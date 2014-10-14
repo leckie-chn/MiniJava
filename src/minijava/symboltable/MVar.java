@@ -7,19 +7,18 @@ public class MVar extends MType {
 	private MType VarTypeRef = null;
 	
 
-	
+	// expression constructor
 	public MVar() {
 		super(TypeEnum.M_VARIABLE);
-		// TODO Auto-generated constructor stub
 	}
 
+	// variable constructor 
 	public MVar(MIdentifier _ID){
 		super(TypeEnum.M_VARIABLE, _ID);
 	}
 	
 	public MVar(MType _object) {
 		super(_object);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void SetVarType(MIdentifier _ID){

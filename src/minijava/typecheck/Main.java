@@ -8,6 +8,7 @@ import minijava.TokenMgrError;
 import minijava.symboltable.MType;
 import minijava.syntaxtree.Node;
 import minijava.visitor.STBuildVisitor;
+import minijava.visitor.STCheckVisitor;
 
 
 public class Main { 
@@ -22,6 +23,8 @@ public class Main {
     		root.accept(new STBuildVisitor(), null);
     		MType.RootBind();
     		MType.RootSymbolTableDump();
+    		root.accept(new STCheckVisitor(), null);
+    		CompileError.Show();
     	}
     	catch(TokenMgrError e){
     		//Handle Lexical Errors
