@@ -193,7 +193,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MIdentifier VarID = n.f0.accept(this, argu).GetID();
 		   MVar VarRef = context.GetVar(VarID);
 		   MType ValueExpr = n.f2.accept(this, argu);
-		   if (!ValueExpr.equals(VarRef.GetVarType())){
+		   if (ValueExpr != null && !ValueExpr.equals(VarRef.GetVarType())){
 			   CompileError.ExprMisMatchError(ValueExpr, VarRef.GetVarType().toString());
 		   }
 		   return null;

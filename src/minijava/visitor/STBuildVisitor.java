@@ -242,7 +242,7 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    * @see visit(Type)
 	    */
 	   public MType visit(ArrayType n, MType argu) {
-		   return new MType(TypeEnum.M_ARRAY, new MIdentifier(n.f0.tokenImage, n.f0.beginLine));
+		   return new MType(TypeEnum.M_ARRAY, new MIdentifier("int[]", n.f0.beginLine));
 	   }
 
 	   /**

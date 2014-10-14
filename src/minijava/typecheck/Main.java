@@ -15,7 +15,7 @@ public class Main {
  
     public static void main(String[] args) {
     	try {
-    		FileInputStream fls = new FileInputStream("tests\\test01.java");
+    		FileInputStream fls = new FileInputStream("tests\\test20.java");
     		System.setIn(fls);
     		Node root = new MiniJavaParser(System.in).Goal();
 
