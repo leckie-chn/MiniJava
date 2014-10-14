@@ -106,4 +106,19 @@ public class MType {
 		return true;
 	}
 	
+	// if this can be assigned to _target
+	public boolean isInstanceOf(MType _target){
+		if (this.Type != _target.Type)	return false;
+		if (this.Type == TypeEnum.M_CLASS){
+			MClass SonClass = (MClass) MType.GetTypeByID(this.Identifier);
+			MClass ParentClass = (MClass) MType.GetTypeByID(_target.Identifier);
+			while (SonClass != null){
+				if (SonClass == ParentClass) return true;
+				SonClass = SonClass.GetParent();
+			}
+			return false;
+		}
+		return true;
+	}
+	
 }

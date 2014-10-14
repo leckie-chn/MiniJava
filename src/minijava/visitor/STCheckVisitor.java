@@ -152,7 +152,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MMethod method = context.GetMethod(MethodID);
 		   n.f8.accept(this, method);
 		   MType RetExpr = n.f10.accept(this, method);
-		   if (!RetExpr.equals(method.GetRetType())){
+		   if (!RetExpr.isInstanceOf(method.GetRetType())){
 			   CompileError.ExprMisMatchError(RetExpr, method.GetRetType().toString());
 		   }
 		   return null;
@@ -192,8 +192,9 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MMethod context = (MMethod) argu;
 		   MIdentifier VarID = n.f0.accept(this, argu).GetID();
 		   MVar VarRef = context.GetVar(VarID);
+		   if (VarRef == null)	return null;
 		   MType ValueExpr = n.f2.accept(this, argu);
-		   if (ValueExpr != null && !ValueExpr.equals(VarRef.GetVarType())){
+		   if (ValueExpr != null && !ValueExpr.isInstanceOf(VarRef.GetVarType())){
 			   CompileError.ExprMisMatchError(ValueExpr, VarRef.GetVarType().toString());
 		   }
 		   return null;
@@ -212,7 +213,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MMethod context = (MMethod) argu;
 		   MIdentifier ArrayID = n.f0.accept(this, argu).GetID();
 		   MVar ArrayVar = context.GetVar(ArrayID);
-		   this.ExprTypeCheck(ArrayVar.GetVarType(), TypeEnum.M_ARRAY);
+		   this.ExprTypeCheck(new MType(ArrayVar.GetVarType().GetType(), new MIdentifier(ArrayVar.GetVarType().GetID().GetID(), n.f1.beginLine)), TypeEnum.M_ARRAY);
 		   MType IndexExpr = n.f2.accept(this, argu);
 		   MType ValueExpr = n.f5.accept(this, argu);
 		   this.ExprTypeCheck(IndexExpr, TypeEnum.M_INT);
@@ -390,6 +391,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   if (CallerClass == null) 	return null;
 		   MType MethodID = n.f2.accept(this, _context);
 		   MMethod Callee = CallerClass.GetMethod(MethodID.GetID());
+		   if (Callee == null) 	return null;
 		   MParameter container = new MParameter();
 		   container._context = (MMethod) _context;
 		   n.f4.accept(this, container);
@@ -400,12 +402,13 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 					   "Method Call parameter number mismatch, Should be " + Callee.ParaTypeList.size(),
 					   n.f3.beginLine));
 		   }
-		   for (int i = 0; i < container.ParaList.size(); i++)
-			   if (!container.ParaList.elementAt(i).equals(Callee.ParaTypeList.elementAt(i).GetVarType())){
+		   for (int i = 0; i < container.ParaList.size() && i < Callee.ParaTypeList.size(); i++)
+			   if (!container.ParaList.elementAt(i).isInstanceOf(Callee.ParaTypeList.elementAt(i).GetVarType())){
 				   CompileError.ExprMisMatchError(container.ParaList.elementAt(i), Callee.ParaTypeList.elementAt(i).GetVarType().GetType().toString());
 			   }
 		   
-		   return Callee.GetRetType();
+		   //return Callee.GetRetType();
+		   return new MType(Callee.GetRetType().GetType(), new MIdentifier(Callee.GetRetType().GetID().GetID(), n.f1.beginLine));
 	   }
 
 	   /**
@@ -443,6 +446,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 	   public MType visit(PrimaryExpression n, MType _context) {
 		   MType SubExpr = n.f0.accept(this, _context);
 		   // identifier : variable name here
+		   if (SubExpr == null) 	return null;
 		   if (SubExpr.GetType() == TypeEnum.M_BASIC){
 			   MMethod context = (MMethod) _context;
 			   MVar VarRef = context.GetVar(SubExpr.GetID());
@@ -487,7 +491,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 	    */
 	   public MType visit(ThisExpression n, MType _context) {
 		   MMethod context = (MMethod) _context;
-		   return new MType(TypeEnum.M_CLASS, context.MasterClass.GetID());
+		   return new MType(TypeEnum.M_CLASS, new MIdentifier(context.MasterClass.GetID().GetID(), n.f0.beginLine));
 	   }
 
 	   /**

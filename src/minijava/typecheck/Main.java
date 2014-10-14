@@ -15,14 +15,16 @@ public class Main {
  
     public static void main(String[] args) {
     	try {
-    		FileInputStream fls = new FileInputStream("tests\\test20.java");
+			/*
+			FileInputStream fls = new FileInputStream("tests\\test99.java");
     		System.setIn(fls);
+				*/
     		Node root = new MiniJavaParser(System.in).Goal();
 
     		//Traverse the Abstract Grammar Tree
     		root.accept(new STBuildVisitor(), null);
     		MType.RootBind();
-    		MType.RootSymbolTableDump();
+    		//MType.RootSymbolTableDump();
     		root.accept(new STCheckVisitor(), null);
     		CompileError.Show();
     	}

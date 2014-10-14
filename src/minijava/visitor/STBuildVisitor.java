@@ -82,9 +82,12 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    */
 	   public MType visit(MainClass n, MType argu) {
 		   MIdentifier ClassID = n.f1.accept(this, null).GetID();
-		   MIdentifier MethodID = n.f11.accept(this, null).GetID();
-		   MType.MainMethod = new MMethod(MethodID, new MClass(ClassID));
+		   MIdentifier MethodID = new MIdentifier("main", n.f5.beginLine);
+		   MClass MainClass = new MClass(ClassID);
+		   MType.InsertClass(MainClass);
+		   MType.MainMethod = new MMethod(MethodID, MainClass);
 		   n.f14.accept(this, MType.MainMethod);
+		   MainClass.InsertMethod(MType.MainMethod);
 		   return null;
 	   }
 

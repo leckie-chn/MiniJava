@@ -81,6 +81,7 @@ public class MMethod extends MType {
 	}
 	
 	public void Bind(){
+		if (this == MType.MainMethod) return;
 		this.BindRetType();
 		for (MVar param : this.ParaTypeList){
 			param.Bind();
@@ -93,6 +94,7 @@ public class MMethod extends MType {
 	
 	// basic, return type, \n paralist \n varlist
 	public String SymbolContent(){
+		if (this == MType.MainMethod) return super.SymbolContent();
 		String Content = String.format("\t%s\t%s@%x\n", super.SymbolContent(), this.RetTypeRef.GetID().GetID(), this.RetTypeRef.hashCode());
 		if (this.ParaTypeList.isEmpty())
 			Content += "\tNull Parameter List\n";
