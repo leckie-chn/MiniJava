@@ -41,4 +41,9 @@ public class MVar extends MType {
 	public String SymbolContent(){
 		return String.format("\t\t%s\t%s@%x\n", super.SymbolContent(), this.VarTypeRef.GetID().GetID(), this.VarTypeRef.hashCode());
 	}
+	
+	/***************************************** code for lab2 ****************************************************/
+	
+	// serial number for class member variable, set in MClass.BindVar()
+	public int VarSerialNo = -1;
 }

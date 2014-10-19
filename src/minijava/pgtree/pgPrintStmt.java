@@ -3,6 +3,15 @@ package minijava.pgtree;
 public class pgPrintStmt implements pgStmt {
 
 	public pgExp f0;
+	
+	public pgPrintStmt(){
+		
+	}
+	
+	public pgPrintStmt(pgExp _f0){
+		this.f0 = _f0;
+	}
+	
 	@Override
 	public void PrintInstruction(int depth) {
 		for (int i = 0; i < depth; i++)

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import minijava.typecheck.CompileError;
 
+import minijava.pgtree.*;
 
 public class MType {
 
@@ -74,6 +75,9 @@ public class MType {
 				e.printStackTrace();
 			}
 		}
+		// code for lab2: begin
+		_NewClass.ClassSerialNo = MType.GlobalClassCnt++;
+		// code for lab2: end
 		MType.RootSymbolTable.put(_NewClass.GetID().GetID(), _NewClass);
 	}
 	
@@ -119,6 +123,37 @@ public class MType {
 			return false;
 		}
 		return true;
+	}
+	
+	/**************************************** code for lab2 ************************************************/
+	private static int GlobalClassCnt = 0;
+	
+	public static pgTemp GlobalTableTemp;
+	
+	public static pgProcedure Get_Global_Init(){
+		pgStmtList StmtList = new pgStmtList();
+		// allocate for global class table
+		MType.GlobalTableTemp = new pgTemp(); 	// the temp var that stores the address of the global class table
+		
+		StmtList.f0.add(new pgMoveStmt(
+				MType.GlobalTableTemp,
+				new pgHAllocate(new pgIntegerLiteral(MType.GlobalClassCnt * 4))
+				));
+		
+		for (Map.Entry<String, MType> entry : MType.RootSymbolTable.entrySet()){
+			if (!(entry.getValue() instanceof MClass)) 	continue;
+			pgStmtList _stmtlist = ((MClass) entry.getValue()).GenGBLInitCode();
+			StmtList.f0.addAll(_stmtlist.f0);
+		}
+		
+		return new pgProcedure(
+				new pgLabel("_Global_Init"), 
+				new pgIntegerLiteral(0),
+				new pgStmtExp(
+						StmtList,
+						new pgIntegerLiteral(0)
+						)
+				);
 	}
 	
 }

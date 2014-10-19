@@ -6,6 +6,8 @@ import java.util.Map;
 
 import minijava.typecheck.CompileError;
 
+import minijava.pgtree.*;
+
 public class MClass extends MType {
 
 	private final HashMap<String, MMethod> MethodTable = new HashMap<String, MMethod>();
@@ -22,7 +24,6 @@ public class MClass extends MType {
 	
 	public MClass() {
 		super(TypeEnum.M_CLASS);
-		// TODO Auto-generated constructor stub
 		
 	}
 
@@ -31,7 +32,6 @@ public class MClass extends MType {
 	}
 	public MClass(MClass _object) {
 		super(_object);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public String toString(){
@@ -48,6 +48,7 @@ public class MClass extends MType {
 			}
 			return;
 		}
+		
 		this.MethodTable.put(_method.GetID().GetID(), _method);
 	}
 	
@@ -98,6 +99,15 @@ public class MClass extends MType {
 		this.VarBinded = true;
 		if (this.ParentClassRef == null)	return;
 		this.ParentClassRef.BindVar();
+		
+		// lab2 code : begin
+		if (this.ParentClassRef != null)
+			this.VarCnt = this.ParentClassRef.VarCnt;	
+		for (Map.Entry<String, MVar> entry : this.VarTable.entrySet()){
+			entry.getValue().VarSerialNo = this.VarCnt++;				// set var serial number here, because needs to tackle class inheritance
+		}
+		// lab2 code : end
+		
 		for (Map.Entry<String, MVar> entry : this.ParentClassRef.VarTable.entrySet()){
 			if (this.VarTable.containsKey(entry.getKey())){
 				// override
@@ -201,4 +211,53 @@ public class MClass extends MType {
 		this.BindMethod();
 		this.BindVar();
 	}
+	
+	/********************************** code for lab2 **************************************************/
+	
+	// the serial number of the class, used in global class table
+	public int ClassSerialNo;
+	
+	// number of Methods, class constructor included
+	public int MethodCnt = 1;
+	
+	// number of member variables, parent class member included
+	public int VarCnt = 0;
+	
+	// Dtable init code
+	public pgStmtList GenGBLInitCode(){
+		pgStmtList _ret = new pgStmtList();
+		pgTemp DtableBase = new pgTemp();
+		
+		// allocate space for Dtable 
+		_ret.f0.add(new pgMoveStmt(
+				DtableBase,
+				new pgHAllocate(new pgIntegerLiteral(this.MethodCnt * 4))
+				));
+		
+		// Store the Address of Methods into Dtable
+		// constructor method
+		_ret.f0.add(new pgHStoreStmt(
+				DtableBase,
+				new pgIntegerLiteral(0),
+				new pgLabel("_" + this.GetID().GetID())
+				));
+		
+		// normal member methods
+		for (Map.Entry<String, MMethod> entry : this.MethodTable.entrySet()){
+			_ret.f0.add(new pgHStoreStmt(
+					DtableBase,
+					new pgIntegerLiteral(entry.getValue().MethodSerialNo),
+					new pgLabel(entry.getValue().PgName)
+					));
+		}
+		
+		// then Store Dtable Base into global class table
+		_ret.f0.add(new pgHStoreStmt(
+				MType.GlobalTableTemp,
+				new pgIntegerLiteral(this.ClassSerialNo),
+				DtableBase
+				));
+		return _ret;
+	}
+	
 }

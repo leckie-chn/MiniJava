@@ -4,9 +4,19 @@ public class pgHStoreStmt implements pgStmt {
 
 	public pgExp f0;
 	
-	public int f1;
+	public pgIntegerLiteral f1;
 	
 	public pgExp f2;
+	
+	public pgHStoreStmt(){
+		
+	}
+	
+	public pgHStoreStmt(pgExp _f0, pgIntegerLiteral _f1, pgExp _f2){
+		this.f0 = _f0;
+		this.f1 = _f1;
+		this.f2 = _f2;
+	}
 	
 	@Override
 	public void PrintInstruction(int depth) {
@@ -14,7 +24,7 @@ public class pgHStoreStmt implements pgStmt {
 			System.out.print('\t');
 		System.out.print("HSTORE ");
 		this.f0.PrintInstruction(depth);
-		System.out.print(this.f1);
+		System.out.print(this.f1.f0);
 		this.f2.PrintInstruction(depth);
 		System.out.println();
 	}

@@ -8,6 +8,14 @@ public class pgCall implements pgExp {
 	
 	public Vector<pgExp> f1 = new Vector<pgExp>();
 	
+	public pgCall(){
+		
+	}
+	
+	public pgCall(pgExp _f0){
+		this.f0 = _f0;
+	}
+	
 	@Override
 	public void PrintInstruction(int depth) {
 		this.f0.PrintInstruction(depth);

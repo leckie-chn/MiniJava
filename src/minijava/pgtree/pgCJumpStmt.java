@@ -6,6 +6,15 @@ public class pgCJumpStmt implements pgStmt {
 	
 	public pgLabel f1;
 	
+	public pgCJumpStmt(){
+		
+	}
+	
+	public pgCJumpStmt(pgExp _f0, pgLabel _f1){
+		this.f0 = _f0;
+		this.f1 = _f1;
+	}
+	
 	@Override
 	public void PrintInstruction(int depth) {
 		for (int i = 0; i < depth; i++)

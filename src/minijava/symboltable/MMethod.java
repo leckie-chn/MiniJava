@@ -90,6 +90,9 @@ public class MMethod extends MType {
 		for (Map.Entry<String, MVar> entry : this.VarTable.entrySet()){
 			entry.getValue().Bind();
 		}
+		
+		// code for lab2
+		this.PgName = this.MasterClass.GetID().GetID() + "_" + this.GetID().GetID();
 	}
 	
 	// basic, return type, \n paralist \n varlist
@@ -115,5 +118,12 @@ public class MMethod extends MType {
 		
 		return Content;
 	}
+	
+	/**************************************************** code for lab2 *************************************************************/
+	
+	public int MethodSerialNo;
+	
+	// the function name in piglet, like Fac_Compute
+	public String PgName;
 	
 }
