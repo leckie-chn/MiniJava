@@ -22,8 +22,14 @@ public class pgHLoadStmt implements pgStmt {
 	public void PrintInstruction(int depth) {
 		for (int i = 0; i < depth; i++)
 			System.out.print('\t');
-		System.out.print("HLOAD " + this.f0);
+		System.out.print("HLOAD " + this.f0 + " ");
 		this.f1.PrintInstruction(depth);
+		if (this.f1 instanceof pgStmtExp)
+			for (int i = 0; i < depth; i++)
+				System.out.print('\t');
+		else
+			System.out.print(" ");
+		
 		System.out.println(this.f2.f0);
 	}
 

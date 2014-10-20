@@ -23,6 +23,7 @@ public class pgGoal implements pgNode {
 		System.out.println("END");
 		for (pgProcedure _procedure : this.f1){
 			_procedure.PrintInstruction(0);
+			System.out.println('\n');
 		}
 	}
 

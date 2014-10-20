@@ -47,7 +47,7 @@ public class MType {
 		return this.Identifier;
 	}
 	
-	private static HashMap<String, MType> RootSymbolTable = new HashMap<String, MType>(){/**
+	public static HashMap<String, MType> RootSymbolTable = new HashMap<String, MType>(){/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
@@ -151,7 +151,7 @@ public class MType {
 				new pgIntegerLiteral(0),
 				new pgStmtExp(
 						StmtList,
-						new pgIntegerLiteral(0)
+						MType.GlobalTableTemp
 						)
 				);
 	}

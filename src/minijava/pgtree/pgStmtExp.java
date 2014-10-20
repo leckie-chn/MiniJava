@@ -23,7 +23,7 @@ public class pgStmtExp implements pgExp {
 		this.f0.PrintInstruction(depth + 1);
 		for (int i = 0; i < depth; i++)
 			System.out.print('\t');
-		System.out.print("RETURN");
+		System.out.print("RETURN\t");
 		this.f1.PrintInstruction(depth);
 		System.out.println();
 		for (int i = 0; i < depth; i++)

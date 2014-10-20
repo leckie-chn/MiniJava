@@ -12,6 +12,10 @@ public class pgTemp implements pgExp {
 		System.out.print("TEMP " + this.f0);
 	}
 
+	public String toString(){
+		return "TEMP " + this.f0;
+	}
+	
 	/*********************** static, for temporary variable allocation **************************/
 	private static int TempCnt = 20;
 	

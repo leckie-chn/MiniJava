@@ -24,9 +24,15 @@ public class pgHStoreStmt implements pgStmt {
 			System.out.print('\t');
 		System.out.print("HSTORE ");
 		this.f0.PrintInstruction(depth);
-		System.out.print(this.f1.f0);
+		
+		if (this.f0 instanceof pgStmtExp)
+			for (int i = 0; i < depth; i++)
+				System.out.print('\t');
+		else
+			System.out.print(" ");
+		
+		System.out.print(this.f1.f0 + " ");
 		this.f2.PrintInstruction(depth);
-		System.out.println();
 	}
 
 }

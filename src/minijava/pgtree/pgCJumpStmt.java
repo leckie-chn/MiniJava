@@ -21,6 +21,13 @@ public class pgCJumpStmt implements pgStmt {
 			System.out.print('\t');
 		System.out.print("CJUMP ");
 		this.f0.PrintInstruction(depth);
+		
+		if (this.f0 instanceof pgStmtExp)
+			for (int i = 0; i < depth; i++)
+				System.out.print('\t');
+		else
+			System.out.print(" ");
+		
 		System.out.println(this.f1);
 	}
 

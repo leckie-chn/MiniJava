@@ -70,8 +70,21 @@ public class MClass extends MType {
 	private void BindMethod(){
 		if (this.MethodBinded) return;
 		this.MethodBinded = true;
-		if (this.ParentClassRef == null) return;
-		this.ParentClassRef.BindMethod();
+		if (this.ParentClassRef != null) 
+			this.ParentClassRef.BindMethod();
+		
+		// lab2 code : begin
+		if (this.ParentClassRef != null)
+			this.MethodCnt = this.ParentClassRef.MethodCnt;
+		// not set for else, because it has already been set to 1
+		
+		for (Map.Entry<String, MMethod> entry : this.MethodTable.entrySet()){
+			entry.getValue().MethodSerialNo = this.MethodCnt++;
+		}
+		// lab2 code : end
+		
+		if (this.ParentClassRef == null) 	return;
+		// resolve for parent class methods
 		for (Map.Entry<String, MMethod> entry : this.ParentClassRef.MethodTable.entrySet()){
 			if (this.MethodTable.containsKey(entry.getKey())){
 				// override
@@ -97,17 +110,21 @@ public class MClass extends MType {
 	private void BindVar(){
 		if (this.VarBinded) return;
 		this.VarBinded = true;
-		if (this.ParentClassRef == null)	return;
-		this.ParentClassRef.BindVar();
+		if (this.ParentClassRef != null)	
+			this.ParentClassRef.BindVar();
 		
 		// lab2 code : begin
 		if (this.ParentClassRef != null)
-			this.VarCnt = this.ParentClassRef.VarCnt;	
+			this.VarCnt = this.ParentClassRef.VarCnt;
+		else
+			this.VarCnt = 0;
 		for (Map.Entry<String, MVar> entry : this.VarTable.entrySet()){
 			entry.getValue().VarSerialNo = this.VarCnt++;				// set var serial number here, because needs to tackle class inheritance
 		}
 		// lab2 code : end
 		
+		// resolve for parent class variable
+		if (this.ParentClassRef == null)	return;
 		for (Map.Entry<String, MVar> entry : this.ParentClassRef.VarTable.entrySet()){
 			if (this.VarTable.containsKey(entry.getKey())){
 				// override
@@ -210,6 +227,9 @@ public class MClass extends MType {
 		}
 		this.BindMethod();
 		this.BindVar();
+		
+		// code for lab2 : set constructor label
+		this.ConstructorLabel = new pgLabel("_" + this.GetID().GetID());
 	}
 	
 	/********************************** code for lab2 **************************************************/
@@ -222,6 +242,9 @@ public class MClass extends MType {
 	
 	// number of member variables, parent class member included
 	public int VarCnt = 0;
+	
+	// name of the constuctor method, will be set in name bind 
+	public pgLabel ConstructorLabel;
 	
 	// Dtable init code
 	public pgStmtList GenGBLInitCode(){
@@ -239,14 +262,14 @@ public class MClass extends MType {
 		_ret.f0.add(new pgHStoreStmt(
 				DtableBase,
 				new pgIntegerLiteral(0),
-				new pgLabel("_" + this.GetID().GetID())
+				this.ConstructorLabel
 				));
 		
 		// normal member methods
 		for (Map.Entry<String, MMethod> entry : this.MethodTable.entrySet()){
 			_ret.f0.add(new pgHStoreStmt(
 					DtableBase,
-					new pgIntegerLiteral(entry.getValue().MethodSerialNo),
+					new pgIntegerLiteral(entry.getValue().MethodSerialNo * 4),
 					new pgLabel(entry.getValue().PgName)
 					));
 		}
@@ -254,10 +277,56 @@ public class MClass extends MType {
 		// then Store Dtable Base into global class table
 		_ret.f0.add(new pgHStoreStmt(
 				MType.GlobalTableTemp,
-				new pgIntegerLiteral(this.ClassSerialNo),
+				new pgIntegerLiteral(this.ClassSerialNo * 4),
 				DtableBase
 				));
 		return _ret;
 	}
 	
+	/**
+	 * @return pgProcedure code for Vtable Allocation
+	 * 
+	 */
+	public pgProcedure GenConstructorCode(){
+		pgTemp VtableTemp = new pgTemp();
+		pgTemp DtableTemp = new pgTemp();
+		pgStmtList _list = new pgStmtList();
+		// allocate space for Vtable
+		_list.f0.add(new pgMoveStmt(
+				VtableTemp,
+				new pgHAllocate(new pgIntegerLiteral(this.VarCnt * 4))
+				));
+		
+		// get link to Dtable
+		_list.f0.add(new pgHLoadStmt(
+				DtableTemp,
+				MType.GlobalTableTemp,
+				new pgIntegerLiteral(this.ClassSerialNo * 4)
+				));
+		
+		// store link to Dtable
+		_list.f0.add(new pgHStoreStmt(
+				VtableTemp,
+				new pgIntegerLiteral(0),
+				DtableTemp
+				));
+		
+		// member variable init
+		for (Map.Entry<String, MVar> entry : this.VarTable.entrySet()){
+			_list.f0.add(new pgHStoreStmt(
+					VtableTemp,
+					new pgIntegerLiteral(entry.getValue().VarSerialNo * 4),
+					new pgIntegerLiteral(0)
+					));
+		}
+		
+		return new pgProcedure(
+				this.ConstructorLabel,
+				new pgIntegerLiteral(0),
+				new pgStmtExp(
+						_list,
+						VtableTemp
+						)
+				);
+	}
 }

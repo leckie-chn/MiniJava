@@ -19,10 +19,23 @@ public class pgCall implements pgExp {
 	@Override
 	public void PrintInstruction(int depth) {
 		this.f0.PrintInstruction(depth);
+		
+		if (this.f0 instanceof pgStmtExp)
+			for (int i = 0; i < depth; i++)
+				System.out.print('\t');
+		else
+			System.out.print(" ");
+		
 		System.out.print('(');
 		for (pgExp _para : this.f1){
 			_para.PrintInstruction(depth);
+			if (_para instanceof pgStmtExp)
+				for (int i = 0; i < depth; i++)
+					System.out.print('\t');
+			else
+				System.out.print(" ");
 		}
+		
 		System.out.print(')');
 	}
 
