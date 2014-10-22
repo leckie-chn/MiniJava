@@ -17,12 +17,12 @@ import minijava.visitor.STBuildVisitor;
 
 public class Main { 
  
+	public static pgGoal ProgramGoal;
+	
     public static void main(String[] args) {
     	
     	try {
     		FileInputStream fls = new FileInputStream("tests\\Factorial.java");
-    		PrintStream pgOut = new PrintStream(new BufferedOutputStream(new FileOutputStream("test.pg")));
-    		PrintStream SymbolOut = new PrintStream(new BufferedOutputStream(new FileOutputStream("Symbols.txt")));
     		
     		System.setIn(fls);
     		
@@ -32,34 +32,7 @@ public class Main {
     		
     		MType.RootBind();
     		
-    		//System.setOut(SymbolOut);
-    		
-    		MType.RootSymbolTableDump();
-    		
-    		//System.setOut(pgOut);
     		System.out.print("\n\n\t\t\tpiglet code\n\n");
-    		
-    		
-    		pgStmtList _list = new pgStmtList();
-    		
-    		pgGoal ProgramGoal = new pgGoal(_list);	
-    		
-    		pgProcedure Global_Init = MType.Get_Global_Init();
-    		
-    		ProgramGoal.AddProcedure(Global_Init);
-    		
-    		_list.f0.add(new pgMoveStmt(
-    				MType.GlobalTableTemp,
-    				new pgCall(
-    						Global_Init.f0
-    						)
-    				));
-    		
-    		for (Map.Entry<String, MType> entry : MType.RootSymbolTable.entrySet())
-    			if (entry.getValue() instanceof MClass)
-    				ProgramGoal.AddProcedure(((MClass) entry.getValue()).GenConstructorCode());
-    		
-    		ProgramGoal.PrintInstruction(0);
     		
     		
     	}

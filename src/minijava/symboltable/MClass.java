@@ -62,6 +62,7 @@ public class MClass extends MType {
 			}
 			return;
 		}
+		
 		this.VarTable.put(_variable.GetID().GetID(), _variable);
 	}
 	
@@ -117,9 +118,10 @@ public class MClass extends MType {
 		if (this.ParentClassRef != null)
 			this.VarCnt = this.ParentClassRef.VarCnt;
 		else
-			this.VarCnt = 0;
+			this.VarCnt = 1; 		// set 1 because no. 0 is for dtable link
 		for (Map.Entry<String, MVar> entry : this.VarTable.entrySet()){
 			entry.getValue().VarSerialNo = this.VarCnt++;				// set var serial number here, because needs to tackle class inheritance
+			entry.getValue().isClassMember = true;
 		}
 		// lab2 code : end
 		
@@ -240,8 +242,8 @@ public class MClass extends MType {
 	// number of Methods, class constructor included
 	public int MethodCnt = 1;
 	
-	// number of member variables, parent class member included
-	public int VarCnt = 0;
+	// number of member variables, parent class member included, set for 1 because 0 is for dtable link
+	public int VarCnt = 1;
 	
 	// name of the constuctor method, will be set in name bind 
 	public pgLabel ConstructorLabel;

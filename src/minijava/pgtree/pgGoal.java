@@ -4,12 +4,18 @@ import java.util.Vector;
 
 public class pgGoal implements pgNode {
 
-	private final pgStmtList f0;
+	public final pgStmtList f0;
 	
 	private final Vector<pgProcedure> f1 = new Vector<pgProcedure>();
 	
-	public pgGoal(pgStmtList _f0){
-		this.f0 = _f0;
+	public pgTemp [] SpecialTemp = new pgTemp[20]; 
+	
+	public pgGoal(){
+		this.f0 = new pgStmtList();
+		
+		// special temp init
+		for (int i = 0; i < 20; i++)
+			this.SpecialTemp[i].f0 = i;
 	}
 	
 	public void AddProcedure(pgProcedure _procedure){

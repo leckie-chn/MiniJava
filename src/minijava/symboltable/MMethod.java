@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import minijava.pgtree.pgStmtList;
+import minijava.pgtree.pgTemp;
 import minijava.typecheck.CompileError;
 
 public class MMethod extends MType {
@@ -125,5 +127,10 @@ public class MMethod extends MType {
 	
 	// the function name in piglet, like Fac_Compute
 	public String PgName;
+	
+	// statement list for the procedure
+	public pgStmtList _list;
+	
+	public pgTemp MasterClassTemp = null;
 	
 }

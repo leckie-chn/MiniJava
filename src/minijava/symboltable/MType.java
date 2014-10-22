@@ -16,6 +16,8 @@ public class MType {
 	
 	public static MMethod MainMethod = null;
 	
+	public static MClass MainClass = null;
+	
 	public MType(TypeEnum _type){
 		this.Type = _type;
 	}

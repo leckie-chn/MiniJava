@@ -1,11 +1,12 @@
 package minijava.symboltable;
 
+import minijava.pgtree.pgTemp;
+
 public class MVar extends MType {
 
 	private MIdentifier VarTypeID;
 	
 	private MType VarTypeRef = null;
-	
 
 	// expression constructor
 	public MVar() {
@@ -46,4 +47,8 @@ public class MVar extends MType {
 	
 	// serial number for class member variable, set in MClass.BindVar()
 	public int VarSerialNo = -1;
+	
+	public pgTemp VarTemp = null;
+	
+	public boolean isClassMember = false;
 }
