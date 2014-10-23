@@ -78,7 +78,8 @@ public class MType {
 			}
 		}
 		// code for lab2: begin
-		_NewClass.ClassSerialNo = MType.GlobalClassCnt++;
+		if (_NewClass != MType.MainClass)
+			_NewClass.ClassSerialNo = MType.GlobalClassCnt++;
 		// code for lab2: end
 		MType.RootSymbolTable.put(_NewClass.GetID().GetID(), _NewClass);
 	}
@@ -144,6 +145,7 @@ public class MType {
 		
 		for (Map.Entry<String, MType> entry : MType.RootSymbolTable.entrySet()){
 			if (!(entry.getValue() instanceof MClass)) 	continue;
+			if (entry.getValue() == MType.MainClass) continue;
 			pgStmtList _stmtlist = ((MClass) entry.getValue()).GenGBLInitCode();
 			StmtList.f0.addAll(_stmtlist.f0);
 		}

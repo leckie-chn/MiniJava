@@ -2,11 +2,15 @@ package minijava.pgtree;
 
 import java.util.Vector;
 
+import minijava.symboltable.MType;
+
 public class pgCall implements pgExp {
 
 	public pgExp f0;
 	
 	public Vector<pgExp> f1 = new Vector<pgExp>();
+	
+	public MType RetType;
 	
 	public pgCall(){
 		
@@ -18,6 +22,7 @@ public class pgCall implements pgExp {
 	
 	@Override
 	public void PrintInstruction(int depth) {
+		System.out.print("CALL ");
 		this.f0.PrintInstruction(depth);
 		
 		if (this.f0 instanceof pgStmtExp)
@@ -26,7 +31,7 @@ public class pgCall implements pgExp {
 		else
 			System.out.print(" ");
 		
-		System.out.print('(');
+		System.out.print("(");
 		for (pgExp _para : this.f1){
 			_para.PrintInstruction(depth);
 			if (_para instanceof pgStmtExp)

@@ -11,6 +11,7 @@ import minijava.ParseException;
 import minijava.TokenMgrError;
 import minijava.syntaxtree.Node;
 import minijava.visitor.GJDepthFirst;
+import minijava.visitor.pgVisitor;
 import minijava.pgtree.*;
 import minijava.symboltable.*;
 import minijava.visitor.STBuildVisitor;
@@ -32,7 +33,9 @@ public class Main {
     		
     		MType.RootBind();
     		
-    		System.out.print("\n\n\t\t\tpiglet code\n\n");
+    		root.accept(new pgVisitor(), null);
+    		
+    		Main.ProgramGoal.PrintInstruction(0);
     		
     		
     	}

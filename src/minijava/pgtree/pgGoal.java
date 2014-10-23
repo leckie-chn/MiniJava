@@ -14,8 +14,10 @@ public class pgGoal implements pgNode {
 		this.f0 = new pgStmtList();
 		
 		// special temp init
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < 20; i++){
+			this.SpecialTemp[i] = new pgTemp(-1);
 			this.SpecialTemp[i].f0 = i;
+		}
 	}
 	
 	public void AddProcedure(pgProcedure _procedure){
