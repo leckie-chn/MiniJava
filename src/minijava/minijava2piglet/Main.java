@@ -23,7 +23,7 @@ public class Main {
     public static void main(String[] args) {
     	
     	try {
-    		FileInputStream fls = new FileInputStream("tests\\Factorial.java");
+    		FileInputStream fls = new FileInputStream("tests\\TreeVisitor.java");
     		
     		System.setIn(fls);
     		
