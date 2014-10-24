@@ -23,7 +23,7 @@ public class Main {
     public static void main(String[] args) {
     	
     	try {
-    		FileInputStream fls = new FileInputStream("tests\\TreeVisitor.java");
+    		FileInputStream fls = new FileInputStream("tests\\BinaryTree.java");
     		
     		System.setIn(fls);
     		
@@ -31,6 +31,8 @@ public class Main {
     		//Traverse the Abstract Grammar Tree
     		root.accept(new STBuildVisitor() ,null);
     		
+    		// bind the symbol table identifier information with its reference
+    		// check & bind 
     		MType.RootBind();
     		
     		root.accept(new pgVisitor(), null);

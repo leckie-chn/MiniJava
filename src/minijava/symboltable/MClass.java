@@ -252,6 +252,7 @@ public class MClass extends MType {
 	public pgStmtList GenGBLInitCode(){
 		pgStmtList _ret = new pgStmtList();
 		pgTemp DtableBase = new pgTemp();
+		boolean DtableFlag [] = new boolean [this.MethodCnt];
 		
 		// allocate space for Dtable 
 		_ret.f0.add(new pgMoveStmt(
@@ -274,6 +275,30 @@ public class MClass extends MType {
 					new pgIntegerLiteral(entry.getValue().MethodSerialNo * 4),
 					new pgLabel(entry.getValue().PgName)
 					));
+			DtableFlag[entry.getValue().MethodSerialNo] = true;
+		}
+		
+		// fill in the null hole
+		for (int i = 0; i < this.MethodCnt; i++){
+			if (DtableFlag[i] == false){
+				MClass AncestorRef = this.ParentClassRef;
+				while (AncestorRef != null){
+					boolean isfound = false;
+					for (Map.Entry<String, MMethod> entry : AncestorRef.MethodTable.entrySet()){
+						if (entry.getValue().MethodSerialNo == i){
+							isfound = true;
+							_ret.f0.add(new pgHStoreStmt(
+									DtableBase,
+									new pgIntegerLiteral(i * 4),
+									new pgLabel(this.GetMethod(entry.getValue().GetID()).PgName)
+									));
+							break;
+						}
+					}
+					if (isfound == true) 	break;
+					AncestorRef = AncestorRef.ParentClassRef;
+				}
+			}
 		}
 		
 		// then Store Dtable Base into global class table
