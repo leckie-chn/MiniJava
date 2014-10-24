@@ -58,7 +58,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   Main.ProgramGoal = new pgGoal();
 		   
 		   // global class table init
-		   MType.GlobalTableTemp = new pgTemp();
+		   // MType.GlobalTableTemp = new pgTemp();
 		   pgProcedure Global_Init = MType.Get_Global_Init();
 		   Main.ProgramGoal.AddProcedure(Global_Init);
 		   Main.ProgramGoal.f0.f0.add(new pgMoveStmt(
