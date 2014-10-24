@@ -382,11 +382,33 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	    * @return pgExp
 	    */
 	   public pgNode visit(AndExpression n, MType argu) {
-		   return new pgBinOp(
-				   OperatorEnum.OP_TIMES,
-				   (pgExp) n.f0.accept(this, argu),
-				   (pgExp) n.f2.accept(this, argu)
-				   );
+		   pgStmtExp _ret = new pgStmtExp();
+		   _ret.f0 = new pgStmtList();
+		   _ret.f1 = new pgTemp();
+		   MMethod context = (MMethod) argu;
+		   pgExp LeftExp = (pgExp) n.f0.accept(this, argu);
+		   pgExp RightExp = (pgExp) n.f2.accept(this, argu);
+		   pgLabel L1 = new pgLabel();
+		   pgLabel L2 = new pgLabel();
+		   _ret.f0.f0.add(new pgCJumpStmt(
+				   LeftExp,
+				   L1
+				   ));
+		   
+		   _ret.f0.f0.add(new pgMoveStmt(
+				   (pgTemp)_ret.f1,
+				   RightExp
+				   ));
+		   
+		   _ret.f0.f0.add(new pgJumpStmt(L2));
+		   _ret.f0.f0.add(L1);
+		   _ret.f0.f0.add(new pgMoveStmt(
+				   (pgTemp)_ret.f1,
+				   new pgIntegerLiteral(0)
+				   ));
+		   _ret.f0.f0.add(L2);
+		   _ret.f0.f0.add(new pgNoOpStmt());
+		   return _ret;
 	   }
 
 	   /**
@@ -514,6 +536,10 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   container.CallNode.f1.add(CallerTemp);
 		   if (_method.ParaTypeList.size() > 18){
 			   container.ParaArray = new pgTemp();
+			   container._context._list.f0.add(new pgMoveStmt(
+					   container.ParaArray,
+					   new pgHAllocate(new pgIntegerLiteral((_method.ParaTypeList.size() - 18) * 4))
+					   ));
 		   }
 		   n.f4.accept(this, container);
 		   if (container.ParaArray != null){

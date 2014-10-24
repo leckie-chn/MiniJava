@@ -23,7 +23,7 @@ public class Main {
     public static void main(String[] args) {
     	
     	try {
-    		FileInputStream fls = new FileInputStream("tests\\BinaryTree.java");
+    		FileInputStream fls = new FileInputStream("tests\\AndTest.java");
     		
     		System.setIn(fls);
     		
