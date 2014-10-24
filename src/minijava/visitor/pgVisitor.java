@@ -168,10 +168,17 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   for (MVar paraVar : _method.ParaTypeList){
 			   paraVar.VarTemp = new pgTemp();
 			   paraVar.VarTemp.TempType = paraVar.GetVarType();
-			   _method._list.f0.add(new pgMoveStmt(
-					   paraVar.VarTemp,
-					   Main.ProgramGoal.SpecialTemp[_method.ParaTypeList.indexOf(paraVar) + 1]
-					   ));
+			   if (_method.ParaTypeList.size() > 19 && _method.ParaTypeList.indexOf(paraVar) > 17){
+				   _method._list.f0.add(new pgHLoadStmt(
+						   paraVar.VarTemp,
+						   Main.ProgramGoal.SpecialTemp[19],
+						   new pgIntegerLiteral(_method.ParaTypeList.indexOf(paraVar) * 4 - 72)
+						   ));
+			   } else
+				   _method._list.f0.add(new pgMoveStmt(
+						   paraVar.VarTemp,
+						   Main.ProgramGoal.SpecialTemp[_method.ParaTypeList.indexOf(paraVar) + 1]
+						   ));
 		   }
 			   
 		   n.f8.accept(this, _method);
@@ -355,7 +362,14 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 			   // subnode of Message Call
 			   MParameter container = (MParameter) argu;
 			   pgExp paraExp = (pgExp) n.f0.accept(this, container._context);
-			   container.CallNode.f1.add(paraExp);
+			   if (container.ParaArray != null && container.CallNode.f1.size() > 18){
+				   container._context._list.f0.add(new pgHStoreStmt(
+						   container.ParaArray,
+						   new pgIntegerLiteral(container.ParaOverFlowCnt++ * 4),
+						   paraExp
+						   ));
+			   } else
+				   container.CallNode.f1.add(paraExp);
 			   return null;
 		   }
 		   return n.f0.accept(this, argu);
@@ -498,7 +512,13 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   container._context = context;
 		   container.CallNode = CallNode;
 		   container.CallNode.f1.add(CallerTemp);
+		   if (_method.ParaTypeList.size() > 18){
+			   container.ParaArray = new pgTemp();
+		   }
 		   n.f4.accept(this, container);
+		   if (container.ParaArray != null){
+			   container.CallNode.f1.add(container.ParaArray);
+		   }
 		   pgTemp DtableTemp = new pgTemp();
 		   pgTemp MAddrTemp = new pgTemp();
 		   context._list.f0.add(new pgHLoadStmt(

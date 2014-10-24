@@ -3,6 +3,7 @@ package minijava.symboltable;
 import java.util.Vector;
 
 import minijava.pgtree.pgCall;
+import minijava.pgtree.pgTemp;
 
 public class MParameter extends MType {
 
@@ -21,4 +22,7 @@ public class MParameter extends MType {
 	// pass down
 	public pgCall CallNode = null;
 	
+	public pgTemp ParaArray = null;
+	
+	public int ParaOverFlowCnt = 0;
 }
