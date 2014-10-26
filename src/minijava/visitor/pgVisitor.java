@@ -113,7 +113,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	    */
 	   public pgNode visit(ClassDeclaration n, MType argu) {
 		   pgLabel ClassID = (pgLabel) n.f1.accept(this, argu);
-		   MClass MasterClass = (MClass) MType.GetTypeByID(new MIdentifier(ClassID.f0, -1));
+		   MClass MasterClass = (MClass) MType.GetTypeByID(new MIdentifier(ClassID.f0, -1, -1));
 		   n.f4.accept(this, MasterClass);
 		   return null;
 	   }
@@ -130,7 +130,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	    */
 	   public pgNode visit(ClassExtendsDeclaration n, MType argu) {
 		   pgLabel ClassID = (pgLabel) n.f1.accept(this, argu);
-		   MClass MasterClass = (MClass) MType.GetTypeByID(new MIdentifier(ClassID.f0, -1));
+		   MClass MasterClass = (MClass) MType.GetTypeByID(new MIdentifier(ClassID.f0, -1, -1));
 		   n.f6.accept(this, MasterClass);
 		   return null;
 	   }
@@ -155,7 +155,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	   public pgNode visit(MethodDeclaration n, MType argu) {
 		   MClass MasterClass = (MClass) argu;
 		   pgLabel MethodID = (pgLabel) n.f2.accept(this, argu);
-		   MMethod _method = MasterClass.GetMethod(new MIdentifier(MethodID.f0, -1));
+		   MMethod _method = MasterClass.GetMethod(new MIdentifier(MethodID.f0, -1, -1));
 		   _method._list = new pgStmtList();
 		   
 		   // move this from special temp 0 to normal temp
@@ -201,7 +201,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	   public pgNode visit(AssignmentStatement n, MType argu) {
 		   pgLabel VarID = (pgLabel) n.f0.accept(this, argu);
 		   MMethod context = (MMethod) argu;
-		   MVar _variable = context.GetVar(new MIdentifier(VarID.f0, -1));
+		   MVar _variable = context.GetVar(new MIdentifier(VarID.f0, -1, -1));
 		   
 		   if (_variable.isClassMember){
 			   context._list.f0.add(new pgHStoreStmt(
@@ -234,7 +234,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	   public pgNode visit(ArrayAssignmentStatement n, MType argu) {
 		   pgLabel ArrayID = (pgLabel) n.f0.accept(this, argu);
 		   MMethod context = (MMethod) argu;
-		   MVar ArrayVar = context.GetVar(new MIdentifier(ArrayID.f0, -1));
+		   MVar ArrayVar = context.GetVar(new MIdentifier(ArrayID.f0, -1, -1));
 		   
 		   // get the array base and store it into a temp
 		   pgTemp ArrayTemp = null;
@@ -385,7 +385,6 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   pgStmtExp _ret = new pgStmtExp();
 		   _ret.f0 = new pgStmtList();
 		   _ret.f1 = new pgTemp();
-		   MMethod context = (MMethod) argu;
 		   pgExp LeftExp = (pgExp) n.f0.accept(this, argu);
 		   pgExp RightExp = (pgExp) n.f2.accept(this, argu);
 		   pgLabel L1 = new pgLabel();
@@ -529,7 +528,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   pgTemp CallerTemp = (pgTemp) n.f0.accept(this, argu);
 		   pgLabel MethodID = (pgLabel) n.f2.accept(this, argu);
 		   MMethod context = (MMethod) argu;
-		   MMethod _method = ((MClass) CallerTemp.TempType).GetMethod(new MIdentifier(MethodID.f0, -1));
+		   MMethod _method = ((MClass) CallerTemp.TempType).GetMethod(new MIdentifier(MethodID.f0, -1, -1));
 		   MParameter container = new MParameter();
 		   container._context = context;
 		   container.CallNode = CallNode;
@@ -547,6 +546,17 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   }
 		   pgTemp DtableTemp = new pgTemp();
 		   pgTemp MAddrTemp = new pgTemp();
+		   pgLabel L1 = new pgLabel();
+		   context._list.f0.add(new pgCJumpStmt(
+				   new pgBinOp(
+						   OperatorEnum.OP_LT,
+						   CallerTemp,
+						   new pgIntegerLiteral(1)
+						   ),
+				   L1
+				   ));
+		   context._list.f0.add(new pgErrorStmt());
+		   context._list.f0.add(L1);
 		   context._list.f0.add(new pgHLoadStmt(
 				   DtableTemp,
 				   CallerTemp,
@@ -578,7 +588,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   pgExp _ret = (pgExp) n.f0.accept(this, argu);
 		   if (_ret instanceof pgLabel){
 			   // sub node is Identifier, denotes a variable
-			   MIdentifier VarID = new MIdentifier(((pgLabel)_ret).f0, -1);
+			   MIdentifier VarID = new MIdentifier(((pgLabel)_ret).f0, -1, -1);
 			   MMethod context = (MMethod) argu;
 			   MVar _variable = context.GetVar(VarID);
 			   if (_variable.isClassMember){
@@ -677,7 +687,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	    */
 	   public pgNode visit(AllocationExpression n, MType argu) {
 		   pgLabel ClassID = (pgLabel) n.f1.accept(this, argu);
-		   MClass ClassRef = (MClass) MType.GetTypeByID(new MIdentifier(ClassID.f0, -1));
+		   MClass ClassRef = (MClass) MType.GetTypeByID(new MIdentifier(ClassID.f0, -1, -1));
 		   MMethod context = (MMethod) argu;
 		   pgTemp _ret = new pgTemp();
 		   context._list.f0.add(new pgMoveStmt(

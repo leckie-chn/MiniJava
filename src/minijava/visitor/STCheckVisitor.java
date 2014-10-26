@@ -213,7 +213,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MMethod context = (MMethod) argu;
 		   MIdentifier ArrayID = n.f0.accept(this, argu).GetID();
 		   MVar ArrayVar = context.GetVar(ArrayID);
-		   this.ExprTypeCheck(new MType(ArrayVar.GetVarType().GetType(), new MIdentifier(ArrayVar.GetVarType().GetID().GetID(), n.f1.beginLine)), TypeEnum.M_ARRAY);
+		   this.ExprTypeCheck(new MType(ArrayVar.GetVarType().GetType(), new MIdentifier(ArrayVar.GetVarType().GetID().GetID(), n.f1.beginLine, n.f1.beginColumn)), TypeEnum.M_ARRAY);
 		   MType IndexExpr = n.f2.accept(this, argu);
 		   MType ValueExpr = n.f5.accept(this, argu);
 		   this.ExprTypeCheck(IndexExpr, TypeEnum.M_INT);
@@ -290,7 +290,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MType RExpr = n.f2.accept(this, argu);
 		   this.ExprTypeCheck(LExpr, TypeEnum.M_BOOLEAN);
 		   this.ExprTypeCheck(RExpr, TypeEnum.M_BOOLEAN);
-		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier("&&", n.f1.beginLine));
+		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier("&&", n.f1.beginLine, n.f1.beginColumn));
 	   }
 
 	   /**
@@ -303,7 +303,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MType RExpr = n.f2.accept(this, argu);
 		   this.ExprTypeCheck(LExpr, TypeEnum.M_INT);
 		   this.ExprTypeCheck(RExpr, TypeEnum.M_INT);
-		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier("<", n.f1.beginLine));
+		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier("<", n.f1.beginLine, n.f1.beginColumn));
 	   }
 
 	   /**
@@ -316,7 +316,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MType RExpr = n.f2.accept(this, argu);
 		   this.ExprTypeCheck(LExpr, TypeEnum.M_INT);
 		   this.ExprTypeCheck(RExpr, TypeEnum.M_INT);
-		   return new MType(TypeEnum.M_INT, new MIdentifier("+", n.f1.beginLine));
+		   return new MType(TypeEnum.M_INT, new MIdentifier("+", n.f1.beginLine, n.f1.beginColumn));
 	   }
 
 	   /**
@@ -329,7 +329,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MType RExpr = n.f2.accept(this, argu);
 		   this.ExprTypeCheck(LExpr, TypeEnum.M_INT);
 		   this.ExprTypeCheck(RExpr, TypeEnum.M_INT);
-		   return new MType(TypeEnum.M_INT, new MIdentifier("-", n.f1.beginLine));
+		   return new MType(TypeEnum.M_INT, new MIdentifier("-", n.f1.beginLine, n.f1.beginColumn));
 	   }
 
 	   /**
@@ -342,7 +342,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MType RExpr = n.f2.accept(this, argu);
 		   this.ExprTypeCheck(LExpr, TypeEnum.M_INT);
 		   this.ExprTypeCheck(RExpr, TypeEnum.M_INT);
-		   return new MType(TypeEnum.M_INT, new MIdentifier("*", n.f1.beginLine));
+		   return new MType(TypeEnum.M_INT, new MIdentifier("*", n.f1.beginLine, n.f1.beginColumn));
 	   }
 
 	   /**
@@ -356,7 +356,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   MType IndexExpr = n.f2.accept(this, argu);
 		   this.ExprTypeCheck(ArrayExpr, TypeEnum.M_ARRAY);
 		   this.ExprTypeCheck(IndexExpr, TypeEnum.M_INT);
-		   return new MType(TypeEnum.M_INT, new MIdentifier("[]", n.f1.beginLine));
+		   return new MType(TypeEnum.M_INT, new MIdentifier("[]", n.f1.beginLine, n.f1.beginColumn));
 	   }
 
 	   /**
@@ -367,7 +367,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 	   public MType visit(ArrayLength n, MType argu) {
 		   MType ArrayExpr = n.f0.accept(this, argu);
 		   this.ExprTypeCheck(ArrayExpr, TypeEnum.M_ARRAY);
-		   return new MType(TypeEnum.M_INT, new MIdentifier(".length", n.f2.beginLine));
+		   return new MType(TypeEnum.M_INT, new MIdentifier(".length", n.f2.beginLine, n.f2.beginColumn));
 	   }
 
 	   /**
@@ -384,7 +384,9 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   if (Caller.GetType() != TypeEnum.M_CLASS){
 			   CompileError.CommonError(new MIdentifier(
 					   "caller should not be in basic variable type",
-					   Caller.GetID().GetLineNo()));
+					   Caller.GetID().GetLineNo(),
+					   Caller.GetID().GetColumnNo()
+					   ));
 			   return null;
 		   }
 		   MClass CallerClass = (MClass) MType.GetTypeByID(Caller.GetID());
@@ -400,7 +402,9 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 		   if (container.ParaList.size() != Callee.ParaTypeList.size()){
 			   CompileError.CommonError(new MIdentifier(
 					   "Method Call parameter number mismatch, Should be " + Callee.ParaTypeList.size(),
-					   n.f3.beginLine));
+					   n.f3.beginLine,
+					   n.f3.beginColumn
+					   ));
 		   }
 		   for (int i = 0; i < container.ParaList.size() && i < Callee.ParaTypeList.size(); i++)
 			   if (!container.ParaList.elementAt(i).isInstanceOf(Callee.ParaTypeList.elementAt(i).GetVarType())){
@@ -408,7 +412,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 			   }
 		   
 		   //return Callee.GetRetType();
-		   return new MType(Callee.GetRetType().GetType(), new MIdentifier(Callee.GetRetType().GetID().GetID(), n.f1.beginLine));
+		   return new MType(Callee.GetRetType().GetType(), new MIdentifier(Callee.GetRetType().GetID().GetID(), n.f1.beginLine, n.f1.beginColumn));
 	   }
 
 	   /**
@@ -451,7 +455,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 			   MMethod context = (MMethod) _context;
 			   MVar VarRef = context.GetVar(SubExpr.GetID());
 			   if (VarRef == null)	return null;
-			   return new MType(VarRef.GetVarType().GetType(), new MIdentifier(VarRef.GetVarType().GetID().GetID(), SubExpr.GetID().GetLineNo()));
+			   return new MType(VarRef.GetVarType().GetType(), new MIdentifier(VarRef.GetVarType().GetID().GetID(), SubExpr.GetID().GetLineNo(), SubExpr.GetID().GetColumnNo()));
 		   }
 		   return SubExpr;
 	   }
@@ -460,28 +464,28 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 	    * f0 -> <INTEGER_LITERAL>
 	    */
 	   public MType visit(IntegerLiteral n, MType argu) {
-		   return new MType(TypeEnum.M_INT, new MIdentifier(n.f0.tokenImage, n.f0.beginLine));
+		   return new MType(TypeEnum.M_INT, new MIdentifier(n.f0.tokenImage, n.f0.beginLine, n.f0.beginColumn));
 	   }
 
 	   /**
 	    * f0 -> "true"
 	    */
 	   public MType visit(TrueLiteral n, MType argu) {
-		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier(n.f0.tokenImage, n.f0.beginLine));
+		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier(n.f0.tokenImage, n.f0.beginLine, n.f0.beginColumn));
 	   }
 
 	   /**
 	    * f0 -> "false"
 	    */
 	   public MType visit(FalseLiteral n, MType argu) {
-		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier(n.f0.tokenImage, n.f0.beginLine));
+		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier(n.f0.tokenImage, n.f0.beginLine, n.f0.beginColumn));
 	   }
 
 	   /**
 	    * f0 -> <IDENTIFIER>
 	    */
 	   public MType visit(Identifier n, MType argu) {
-		   return new MType(TypeEnum.M_BASIC, new MIdentifier(n.f0.tokenImage, n.f0.beginLine));
+		   return new MType(TypeEnum.M_BASIC, new MIdentifier(n.f0.tokenImage, n.f0.beginLine, n.f0.beginColumn));
 	   }
 
 	   /**
@@ -491,7 +495,7 @@ public class STCheckVisitor extends GJDepthFirst<MType, MType> {
 	    */
 	   public MType visit(ThisExpression n, MType _context) {
 		   MMethod context = (MMethod) _context;
-		   return new MType(TypeEnum.M_CLASS, new MIdentifier(context.MasterClass.GetID().GetID(), n.f0.beginLine));
+		   return new MType(TypeEnum.M_CLASS, new MIdentifier(context.MasterClass.GetID().GetID(), n.f0.beginLine, n.f0.beginColumn));
 	   }
 
 	   /**

@@ -82,7 +82,7 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    */
 	   public MType visit(MainClass n, MType argu) {
 		   MIdentifier ClassID = n.f1.accept(this, null).GetID();
-		   MIdentifier MethodID = new MIdentifier("main", n.f5.beginLine);
+		   MIdentifier MethodID = new MIdentifier("main", n.f5.beginLine, n.f5.beginColumn);
 		   MClass MainClass = new MClass(ClassID);
 		   MType.MainClass = MainClass;
 		   MType.InsertClass(MainClass);
@@ -246,7 +246,7 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    * @see visit(Type)
 	    */
 	   public MType visit(ArrayType n, MType argu) {
-		   return new MType(TypeEnum.M_ARRAY, new MIdentifier("int[]", n.f0.beginLine));
+		   return new MType(TypeEnum.M_ARRAY, new MIdentifier("int[]", n.f0.beginLine, n.f0.beginColumn));
 	   }
 
 	   /**
@@ -254,7 +254,7 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    * @see visit(Type)
 	    */
 	   public MType visit(BooleanType n, MType argu) {
-		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier(n.f0.tokenImage, n.f0.beginLine));
+		   return new MType(TypeEnum.M_BOOLEAN, new MIdentifier(n.f0.tokenImage, n.f0.beginLine, n.f0.beginColumn));
 	   }
 
 	   /**
@@ -262,7 +262,7 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    * @see visit(Type)
 	    */
 	   public MType visit(IntegerType n, MType argu) {
-		   return new MType(TypeEnum.M_INT, new MIdentifier(n.f0.tokenImage, n.f0.beginLine));
+		   return new MType(TypeEnum.M_INT, new MIdentifier(n.f0.tokenImage, n.f0.beginLine, n.f0.beginColumn));
 	   }
 	   
 
@@ -270,7 +270,7 @@ public class STBuildVisitor extends GJDepthFirst<MType, MType> {
 	    * f0 -> <IDENTIFIER>
 	    */
 	   public MType visit(Identifier n, MType argu) {
-		   return new MType(TypeEnum.M_BASIC, new MIdentifier(n.f0.tokenImage, n.f0.beginLine));
+		   return new MType(TypeEnum.M_BASIC, new MIdentifier(n.f0.tokenImage, n.f0.beginLine, n.f0.beginColumn));
 	   }
 
 

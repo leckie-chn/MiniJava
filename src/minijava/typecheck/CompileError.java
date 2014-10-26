@@ -21,12 +21,12 @@ public class CompileError {
 		
 		String errorstr = String.format("duplicate %s definition error: already defined in %d", e1.GetType().toString(), e2.GetID().GetLineNo());
 		
-		Info.add(String.format("At Line %d: %s", e1.GetID().GetLineNo(), errorstr));
+		Info.add(String.format("At Line %d, Column %d: %s", e1.GetID().GetLineNo(), e1.GetID().GetColumnNo(), errorstr));
 	}
 	
 	public static void UndefinedError(MType e){
 		String errorstr = String.format("undefined %s error", e.GetType().toString());
-		Info.add(String.format("At Line %d: %s", e.GetID().GetLineNo(), errorstr));
+		Info.add(String.format("At Line %d, Column %d: %s", e.GetID().GetLineNo(), e.GetID().GetColumnNo(), errorstr));
 	}
 	
 	public static void ExtendLoopError(MClass e){
@@ -38,16 +38,16 @@ public class CompileError {
 			if (TmpClass == e) break;
 		}
 		
-		Info.add(String.format("At Line %d: %s", e.GetID().GetLineNo(), errorstr));
+		Info.add(String.format("At Line %d, Column %d: %s", e.GetID().GetLineNo(), e.GetID().GetColumnNo(), errorstr));
 	}
 	
 	public static void ExprMisMatchError(MType e, String idealType){
 		String errorstr = String.format("Expression Type Mismatch error; should be %s", idealType);
-		Info.add(String.format("At Line %d: %s", e.GetID().GetLineNo(), errorstr));
+		Info.add(String.format("At Line %d, Column %d: %s", e.GetID().GetLineNo(), e.GetID().GetColumnNo(), errorstr));
 	}
 	
 	public static void CommonError(MIdentifier _errorID){
-		Info.add(String.format("At Line %d: %s", _errorID.GetLineNo(), _errorID.GetID()));
+		Info.add(String.format("At Line %d, Column %d: %s", _errorID.GetLineNo(), _errorID.GetColumnNo(), _errorID.GetID()));
 	}
 	
 	public static void Show(){

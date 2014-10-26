@@ -16,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
     	try {
 			/*
-			FileInputStream fls = new FileInputStream("tests\\test99.java");
+			FileInputStream fls = new FileInputStream("tests\\BinaryTree-error.java");
     		System.setIn(fls);
 				*/
     		Node root = new MiniJavaParser(System.in).Goal();

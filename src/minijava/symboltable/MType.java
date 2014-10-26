@@ -55,9 +55,9 @@ public class MType {
 		private static final long serialVersionUID = 1L;
 
 	{
-		put("int", new MType(TypeEnum.M_INT, new MIdentifier("int", -1)));
-		put("boolean", new MType(TypeEnum.M_BOOLEAN, new MIdentifier("boolean", -1)));
-		put("int[]", new MType(TypeEnum.M_ARRAY, new MIdentifier("int[]", -1)));
+		put("int", new MType(TypeEnum.M_INT, new MIdentifier("int", -1, -1)));
+		put("boolean", new MType(TypeEnum.M_BOOLEAN, new MIdentifier("boolean", -1, -1)));
+		put("int[]", new MType(TypeEnum.M_ARRAY, new MIdentifier("int[]", -1, -1)));
 	}};
 
 	public static MType GetTypeByID(MIdentifier _ID){
