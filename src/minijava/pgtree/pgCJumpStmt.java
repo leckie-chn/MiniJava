@@ -2,7 +2,7 @@ package minijava.pgtree;
 
 public class pgCJumpStmt implements pgStmt {
 
-	public pgExp f0;
+	public pgTemp f0;
 	
 	public pgLabel f1;
 	
@@ -10,7 +10,7 @@ public class pgCJumpStmt implements pgStmt {
 		
 	}
 	
-	public pgCJumpStmt(pgExp _f0, pgLabel _f1){
+	public pgCJumpStmt(pgTemp _f0, pgLabel _f1){
 		this.f0 = _f0;
 		this.f1 = _f1;
 	}
@@ -22,11 +22,7 @@ public class pgCJumpStmt implements pgStmt {
 		System.out.print("CJUMP ");
 		this.f0.PrintInstruction(depth);
 		
-		if (this.f0 instanceof pgStmtExp)
-			for (int i = 0; i < depth; i++)
-				System.out.print('\t');
-		else
-			System.out.print(" ");
+		System.out.print(" ");
 		
 		System.out.println(this.f1);
 	}

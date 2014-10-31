@@ -4,13 +4,13 @@ public class pgStmtExp implements pgExp {
 
 	public pgStmtList f0;
 	
-	public pgExp f1;
+	public pgSimpleExp f1;
 	
 	public pgStmtExp(){
 		
 	}
 	
-	public pgStmtExp(pgStmtList _f0, pgExp _f1){
+	public pgStmtExp(pgStmtList _f0, pgSimpleExp _f1){
 		this.f0 = _f0;
 		this.f1 = _f1;
 	}

@@ -6,9 +6,9 @@ import minijava.symboltable.MType;
 
 public class pgCall implements pgExp {
 
-	public pgExp f0;
+	public pgSimpleExp f0;
 	
-	public Vector<pgExp> f1 = new Vector<pgExp>();
+	public Vector<pgTemp> f1 = new Vector<pgTemp>();
 	
 	public MType RetType;
 	
@@ -16,7 +16,7 @@ public class pgCall implements pgExp {
 		
 	}
 	
-	public pgCall(pgExp _f0){
+	public pgCall(pgSimpleExp _f0){
 		this.f0 = _f0;
 	}
 	

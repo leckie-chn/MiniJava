@@ -1,6 +1,6 @@
 package minijava.pgtree;
 
-public class pgIntegerLiteral implements pgExp {
+public class pgIntegerLiteral implements pgSimpleExp {
 
 	public int f0;
 	

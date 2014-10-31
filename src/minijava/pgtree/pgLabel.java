@@ -1,6 +1,6 @@
 package minijava.pgtree;
 
-public class pgLabel implements pgExp, pgStmt {
+public class pgLabel implements pgSimpleExp, pgStmt {
 
 	public static int StmtLabelCnt = 0;
 	

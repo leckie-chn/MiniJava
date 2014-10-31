@@ -2,13 +2,13 @@ package minijava.pgtree;
 
 public class pgPrintStmt implements pgStmt {
 
-	public pgExp f0;
+	public pgSimpleExp f0;
 	
 	public pgPrintStmt(){
 		
 	}
 	
-	public pgPrintStmt(pgExp _f0){
+	public pgPrintStmt(pgSimpleExp _f0){
 		this.f0 = _f0;
 	}
 	

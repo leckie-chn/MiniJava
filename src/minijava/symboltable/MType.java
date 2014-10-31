@@ -150,6 +150,13 @@ public class MType {
 			StmtList.f0.addAll(_stmtlist.f0);
 		}
 		
+		MType.ConstOne = new pgTemp();
+		
+		StmtList.f0.add(new pgMoveStmt(
+				MType.ConstOne,
+				new pgIntegerLiteral(1)
+				));
+		
 		return new pgProcedure(
 				new pgLabel("_Global_Init"), 
 				new pgIntegerLiteral(0),
@@ -160,4 +167,7 @@ public class MType {
 				);
 	}
 	
+	/******************************************** code for lab3 *********************************************/
+	
+	public static pgTemp ConstOne = null;
 }

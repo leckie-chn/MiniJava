@@ -4,7 +4,7 @@ public class pgHLoadStmt implements pgStmt {
 
 	public pgTemp f0;
 	
-	public pgExp f1;
+	public pgTemp f1;
 	
 	public pgIntegerLiteral f2;
 	
@@ -12,7 +12,7 @@ public class pgHLoadStmt implements pgStmt {
 		
 	}
 	
-	public pgHLoadStmt(pgTemp _f0, pgExp _f1, pgIntegerLiteral _f2){
+	public pgHLoadStmt(pgTemp _f0, pgTemp _f1, pgIntegerLiteral _f2){
 		this.f0 = _f0;
 		this.f1 = _f1;
 		this.f2 = _f2;
@@ -24,11 +24,7 @@ public class pgHLoadStmt implements pgStmt {
 			System.out.print('\t');
 		System.out.print("HLOAD " + this.f0 + " ");
 		this.f1.PrintInstruction(depth);
-		if (this.f1 instanceof pgStmtExp)
-			for (int i = 0; i < depth; i++)
-				System.out.print('\t');
-		else
-			System.out.print(" ");
+		System.out.print(" ");
 		
 		System.out.println(this.f2.f0);
 	}

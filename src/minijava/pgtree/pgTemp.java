@@ -2,7 +2,7 @@ package minijava.pgtree;
 
 import minijava.symboltable.MType;
 
-public class pgTemp implements pgExp {
+public class pgTemp implements pgSimpleExp {
 
 	public int f0;
 	

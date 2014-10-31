@@ -9,6 +9,7 @@ public class pgGoal implements pgNode {
 	private final Vector<pgProcedure> f1 = new Vector<pgProcedure>();
 	
 	public pgTemp [] SpecialTemp = new pgTemp[20]; 
+
 	
 	public pgGoal(){
 		this.f0 = new pgStmtList();
