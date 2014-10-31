@@ -262,19 +262,33 @@ public class MClass extends MType {
 		
 		// Store the Address of Methods into Dtable
 		// constructor method
+		pgTemp LabelTmp = new pgTemp();
+		
+		_ret.f0.add(new pgMoveStmt(
+				LabelTmp,
+				this.ConstructorLabel
+				));
+		
 		_ret.f0.add(new pgHStoreStmt(
 				DtableBase,
 				new pgIntegerLiteral(0),
-				this.ConstructorLabel
+				LabelTmp
 				));
 		
 		// normal member methods
 		for (Map.Entry<String, MMethod> entry : this.MethodTable.entrySet()){
+			
+			_ret.f0.add(new pgMoveStmt(
+					LabelTmp,
+					new pgLabel(entry.getValue().PgName)
+					));
+			
 			_ret.f0.add(new pgHStoreStmt(
 					DtableBase,
 					new pgIntegerLiteral(entry.getValue().MethodSerialNo * 4),
-					new pgLabel(entry.getValue().PgName)
+					LabelTmp
 					));
+			
 			DtableFlag[entry.getValue().MethodSerialNo] = true;
 		}
 		
@@ -287,10 +301,14 @@ public class MClass extends MType {
 					for (Map.Entry<String, MMethod> entry : AncestorRef.MethodTable.entrySet()){
 						if (entry.getValue().MethodSerialNo == i){
 							isfound = true;
+							_ret.f0.add(new pgMoveStmt(
+									LabelTmp,
+									new pgLabel(this.GetMethod(entry.getValue().GetID()).PgName)
+									));
 							_ret.f0.add(new pgHStoreStmt(
 									DtableBase,
 									new pgIntegerLiteral(i * 4),
-									new pgLabel(this.GetMethod(entry.getValue().GetID()).PgName)
+									LabelTmp
 									));
 							break;
 						}
@@ -339,11 +357,16 @@ public class MClass extends MType {
 				));
 		
 		// member variable init
+		pgTemp ZeroTmp = new pgTemp();
+		_list.f0.add(new pgMoveStmt(
+				ZeroTmp,
+				new pgIntegerLiteral(0)
+				));
 		for (Map.Entry<String, MVar> entry : this.VarTable.entrySet()){
 			_list.f0.add(new pgHStoreStmt(
 					VtableTemp,
 					new pgIntegerLiteral(entry.getValue().VarSerialNo * 4),
-					new pgIntegerLiteral(0)
+					ZeroTmp
 					));
 		}
 		

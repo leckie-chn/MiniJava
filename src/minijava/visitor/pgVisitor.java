@@ -455,39 +455,40 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	    * @return pgExp
 	    */
 	   public pgNode visit(AndExpression n, MType argu) {
-		   pgStmtExp _ret = new pgStmtExp();
-		   _ret.f0 = new pgStmtList();
-		   _ret.f1 = new pgTemp();
+		   pgStmtList _ret = ((MMethod) argu)._list;
+		   pgTemp ReslTmp = new pgTemp();
 		   pgSimpleExp LeftExp = (pgSimpleExp) n.f0.accept(this, argu);
 		   pgSimpleExp RightExp = (pgSimpleExp) n.f2.accept(this, argu);
 		   pgLabel L1 = new pgLabel();
 		   pgLabel L2 = new pgLabel();
 		   
 		   if (LeftExp instanceof pgTemp){
-			   _ret.f0.f0.add(new pgCJumpStmt(
+			   _ret.f0.add(new pgCJumpStmt(
 					   (pgTemp)LeftExp,
 					   L1
 					   ));
 		   } else {
 			   pgIntegerLiteral LeftVal = (pgIntegerLiteral) LeftExp;
 			   if (LeftVal.f0 == 0)
-				   _ret.f0.f0.add(new pgJumpStmt(L1));
+				   _ret.f0.add(new pgJumpStmt(L1));
 		   }
 		   
-		   _ret.f0.f0.add(new pgMoveStmt(
-				   (pgTemp)_ret.f1,
+		   _ret.f0.add(new pgMoveStmt(
+				   ReslTmp,
 				   RightExp
 				   ));
 		   
-		   _ret.f0.f0.add(new pgJumpStmt(L2));
-		   _ret.f0.f0.add(L1);
-		   _ret.f0.f0.add(new pgMoveStmt(
-				   (pgTemp)_ret.f1,
+		   _ret.f0.add(new pgJumpStmt(L2));
+		   _ret.f0.add(L1);
+		   _ret.f0.add(new pgMoveStmt(
+				   ReslTmp,
 				   new pgIntegerLiteral(0)
 				   ));
-		   _ret.f0.f0.add(L2);
-		   _ret.f0.f0.add(new pgNoOpStmt());
-		   return _ret;
+		   _ret.f0.add(L2);
+		   _ret.f0.add(new pgNoOpStmt());
+		   
+		   
+		   return ReslTmp;
 	   }
 
 	   /**
