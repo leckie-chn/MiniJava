@@ -23,7 +23,7 @@ public class Main {
     public static void main(String[] args) {
     	
     	try {
-    		 FileInputStream fls = new FileInputStream("ucla\\Minijava\\MoreThan4.java");
+    		 FileInputStream fls = new FileInputStream("ucla\\Minijava\\LinearSearch.java");
     		
     		 System.setIn(fls);
     		
