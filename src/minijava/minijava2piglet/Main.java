@@ -23,9 +23,9 @@ public class Main {
     public static void main(String[] args) {
     	
     	try {
-    		// FileInputStream fls = new FileInputStream("tests\\test00.java");
+    		FileInputStream fls = new FileInputStream("ucla\\Minijava\\MoreThan4.java");
     		
-    		// System.setIn(fls);
+    		System.setIn(fls);
     		
     		Node root = new MiniJavaParser(System.in).Goal();
     		//Traverse the Abstract Grammar Tree

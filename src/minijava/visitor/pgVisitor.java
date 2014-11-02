@@ -697,6 +697,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	    * f5 -> ")"
 	    */
 	   public pgNode visit(MessageSend n, MType argu) {
+		   pgTemp ReslTmp = new pgTemp();
 		   pgCall CallNode = new pgCall();
 		   pgTemp CallerTemp = (pgTemp) n.f0.accept(this, argu);
 		   pgLabel MethodID = (pgLabel) n.f2.accept(this, argu);
@@ -755,7 +756,12 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 				   ));
 		   CallNode.f0 = MAddrTemp;
 		   CallNode.RetType = _method.GetRetType();
-		   return CallNode;
+
+		   context._list.f0.add(new pgMoveStmt(
+				   ReslTmp,
+				   CallNode
+				   ));
+		   return ReslTmp;
 	   }
 
 
