@@ -227,7 +227,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 			   }
 			   context._list.f0.add(new pgMoveStmt(
 					   _variable.VarTemp,
-					   (pgExp) n.f2.accept(this, argu)
+					   ValExp
 					   ));
 		   }
 		   return null;
