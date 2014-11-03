@@ -227,7 +227,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 			   }
 			   context._list.f0.add(new pgMoveStmt(
 					   _variable.VarTemp,
-					   ValExp
+					   ValTmp
 					   ));
 		   }
 		   return null;
@@ -369,8 +369,9 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   MMethod context = (MMethod) argu;
 		   pgLabel LoopLabel = new pgLabel();
 		   pgLabel OutletLabel = new pgLabel();
-		   pgSimpleExp CondExp = (pgSimpleExp) n.f2.accept(this, argu);
 		   context._list.f0.add(LoopLabel);
+		   pgSimpleExp CondExp = (pgSimpleExp) n.f2.accept(this, argu);
+		   
 		   
 		   if (CondExp instanceof pgTemp){
 			   context._list.f0.add(new pgCJumpStmt(
@@ -761,6 +762,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 				   ReslTmp,
 				   CallNode
 				   ));
+		   ReslTmp.TempType = _method.GetRetType();
 		   return ReslTmp;
 	   }
 
@@ -850,17 +852,44 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	    */
 	   public pgNode visit(ArrayAllocationExpression n, MType argu) {
 		   MMethod context = (MMethod) argu;
+		   pgSimpleExp LenExp = (pgSimpleExp) n.f3.accept(this, argu);
 		   pgTemp ArrayTemp = new pgTemp();
-		   pgTemp LenTemp = new pgTemp();
+		   pgTemp LenTemp = null;
 		   
+		   if (LenExp instanceof pgTemp){
+			   LenTemp = (pgTemp) LenExp;
+		   } else {
+			   LenTemp = new pgTemp();
+			   context._list.f0.add(new pgMoveStmt(
+					   LenTemp,
+					   LenExp
+					   ));
+		   }
+		   
+		   pgTemp LenBy4 = new pgTemp();
 		   context._list.f0.add(new pgMoveStmt(
-				   LenTemp,
-				   (pgExp) n.f3.accept(this, argu)
+				   LenBy4,
+				   new pgBinOp(
+						   OperatorEnum.OP_TIMES,
+						   LenTemp,
+						   new pgIntegerLiteral(4)
+						   )
+				   ));
+		   pgTemp TotLen = new pgTemp();
+		   context._list.f0.add(new pgMoveStmt(
+				   TotLen,
+				   new pgBinOp(
+						   OperatorEnum.OP_PLUS,
+						   LenBy4,
+						   new pgIntegerLiteral(4)
+						   )
 				   ));
 		   
 		   context._list.f0.add(new pgMoveStmt(
 				   ArrayTemp,
-				   new pgHAllocate(LenTemp)
+				   new pgHAllocate(
+						   TotLen
+						   )
 				   ));
 		   
 		   context._list.f0.add(new pgHStoreStmt(
@@ -900,11 +929,16 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 	   public pgNode visit(NotExpression n, MType argu) {
 		   MMethod context = (MMethod) argu;
 		   pgTemp ReslTmp = new pgTemp();
+		   pgTemp OneTmp = new pgTemp();
+		   context._list.f0.add(new pgMoveStmt(
+				   OneTmp,
+				   new pgIntegerLiteral(1)
+				   ));
 		   context._list.f0.add(new pgMoveStmt(
 				   ReslTmp,
 				   new pgBinOp(
 						   OperatorEnum.OP_MINUS,
-						   MType.ConstOne,
+						   OneTmp,
 						   (pgSimpleExp) n.f1.accept(this, argu)
 						   )
 				   ));
