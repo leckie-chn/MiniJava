@@ -23,11 +23,11 @@ public class Main {
     public static void main(String[] args) {
     	
     	try {
-    		/*
-    		FileInputStream fls = new FileInputStream("ucla\\Minijava\\BinaryTree.java");
+    		
+    		FileInputStream fls = new FileInputStream("test.java");
     		
     		System.setIn(fls);
-    		*/
+    		
     		
     		Node root = new MiniJavaParser(System.in).Goal();
     		//Traverse the Abstract Grammar Tree

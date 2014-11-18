@@ -3,6 +3,7 @@ package spiglet.spiglet2kanga;
 import spiglet.ParseException;
 import spiglet.SpigletParser;
 import spiglet.TokenMgrError;
+import spiglet.flowgraph.RegisterRef;
 import spiglet.syntaxtree.Node;
 import spiglet.visitor.GJDepthFirst;
 
@@ -13,6 +14,7 @@ public class Main {
  
     public static void main(String[] args) {
     	try {
+    		RegisterRef.init();
     		Node root = new SpigletParser(System.in).Goal();
     		/*
     		 * TODO: Implement your own Visitors and other classes.
