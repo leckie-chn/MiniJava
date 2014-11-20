@@ -19,13 +19,11 @@ import spiglet.stmtnode.spgNoOp;
 import spiglet.stmtnode.spgPrint;
 import spiglet.stmtnode.spgRoot;
 import spiglet.stmtnode.spgSimpleExp;
-import spiglet.stmtnode.spgStmtNode;
 import spiglet.stmtnode.spgTempRef;
 import spiglet.syntaxtree.BinOp;
 import spiglet.syntaxtree.CJumpStmt;
 import spiglet.syntaxtree.Call;
 import spiglet.syntaxtree.ErrorStmt;
-import spiglet.syntaxtree.Exp;
 import spiglet.syntaxtree.Goal;
 import spiglet.syntaxtree.HAllocate;
 import spiglet.syntaxtree.HLoadStmt;
@@ -54,8 +52,9 @@ public class SPGVisitor extends GJDepthFirst<spgRoot, VisitorParameter> {
 	    * f4 -> <EOF>
 	    */
 	   public spgRoot visit(Goal n, VisitorParameter argu) {
-		   
-		   n.f1.accept(this, argu);	     
+		   FlowGraph graph = new FlowGraph(new spgLabel("main"), 0);
+		   FlowGraph.GlobalFlowGraphVec.add(graph);
+		   n.f1.accept(this, graph);	     
 		   n.f3.accept(this, argu);
 		   return null;
 	   }
@@ -98,6 +97,7 @@ public class SPGVisitor extends GJDepthFirst<spgRoot, VisitorParameter> {
 	   public spgRoot visit(Stmt n, VisitorParameter argu) {
 		   ((FlowGraph)argu).InStmtList = false;
 		   n.f0.accept(this, argu);
+		   ((FlowGraph)argu).InStmtList = true;
 		   return null;
 	   }
 

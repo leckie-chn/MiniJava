@@ -1,5 +1,6 @@
 package spiglet.flowgraph;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
@@ -23,8 +24,15 @@ public class FlowGraphNode {
 	
 	private Set<spgTempRef> OutALiveSet;
 	
+	private spgTempRef RetTemp = null;
+	
 	public FlowGraphNode(spgLabel _label){
 		this.LeadingLabel = _label;
+	}
+	
+	public void SetRetTemp(spgTempRef _ret){
+		if (this.isExitNode)
+			this.RetTemp = _ret;
 	}
 	
 	public Set<spgTempRef> GetInAlive(){
@@ -32,7 +40,11 @@ public class FlowGraphNode {
 	}
 	
 	public boolean LiveAnalysis(){
-		if (this.isExitNode == true) return true;
+		if (this.isExitNode == true) {
+			this.InAliveSet = new HashSet<spgTempRef>();
+			this.InAliveSet.add(this.RetTemp);
+			return true;
+		}
 		
 		int NodeSize = this.FlowVec.size() - 1;
 		this.OutALiveSet = this.FlowVec.lastElement().AliveSet;

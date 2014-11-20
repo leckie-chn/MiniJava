@@ -26,13 +26,11 @@ public class FlowGraph implements VisitorParameter{
 	
 	public final int ParaNum;
 	
-	public final Map<spgLabel, FlowGraphNode> BLMapping = new HashMap<spgLabel, FlowGraphNode>();
+	public final Map<String, FlowGraphNode> BLMapping = new HashMap<String, FlowGraphNode>();
 	
 	private final Vector<spgStmtNode> RawStmtVec = new Vector<spgStmtNode>();
 	
-	private final Vector<FlowGraphNode> NodeVec = new Vector<FlowGraphNode>();
-	
-	public final InterfereGraph ITFGraph = new InterfereGraph();
+	public final Vector<FlowGraphNode> NodeVec = new Vector<FlowGraphNode>();
 	
 	private spgTempRef RetTemp;
 	
@@ -58,10 +56,12 @@ public class FlowGraph implements VisitorParameter{
 			if (_stmt instanceof spgLabel){
 				CurrentNode = new FlowGraphNode((spgLabel)_stmt);
 				this.NodeVec.add(CurrentNode);
-				this.BLMapping.put((spgLabel)_stmt, CurrentNode);
+				this.BLMapping.put(((spgLabel)_stmt).arg, CurrentNode);
 			} else {
-				if (CurrentNode == null)
+				if (CurrentNode == null){
 					CurrentNode = new FlowGraphNode(null);
+					this.NodeVec.add(CurrentNode);
+				}
 				CurrentNode.FlowVec.add(new ProgramStatus(_stmt));
 				if (_stmt instanceof spgJumpAble)
 					CurrentNode = null;
@@ -69,17 +69,18 @@ public class FlowGraph implements VisitorParameter{
 		}
 		
 		// flow connection
-		for (FlowGraphNode block : this.NodeVec){
+		for (int i = 0; i < this.NodeVec.size(); i++){
+			FlowGraphNode block = this.NodeVec.elementAt(i);
 			spgStmtNode laststmt = block.FlowVec.lastElement().Statement;
 			if (laststmt instanceof spgJumpAble){
-				FlowGraphNode targblock = this.BLMapping.get(((spgJumpAble) laststmt).getTarget());
+				FlowGraphNode targblock = this.BLMapping.get(((spgJumpAble) laststmt).getTarget().arg);
 				block.successor.add(targblock);
 				targblock.predecessor.add(block);
 			}
 			
-			if ( !(laststmt instanceof spgJump)){
-				FlowGraphNode nextblock = this.NodeVec.elementAt(this.NodeVec.indexOf(block) + 1);
-				if (nextblock != null){
+			if ( (laststmt instanceof spgJump) == false ){
+				if (i + 1 < this.NodeVec.size()){
+					FlowGraphNode nextblock = this.NodeVec.elementAt(i + 1);
 					block.successor.add(nextblock);
 					nextblock.predecessor.add(block);
 				} else {
@@ -88,7 +89,7 @@ public class FlowGraph implements VisitorParameter{
 					block.successor.add(ExitNode);
 					this.ExitNode.predecessor.add(block);
 					if (this.RetTemp != null)
-						this.ExitNode.GetInAlive().add(this.RetTemp);
+						this.ExitNode.SetRetTemp(RetTemp);
 				}
 			}
 		}
@@ -96,6 +97,8 @@ public class FlowGraph implements VisitorParameter{
 		for (FlowGraphNode block : this.NodeVec){
 			block.FlowVec.add(new ProgramStatus(null));
 		}
+		
+		this.EntryNode = this.NodeVec.elementAt(0);
 	}
 	
 	public void LiveAnalysis(){
@@ -104,6 +107,7 @@ public class FlowGraph implements VisitorParameter{
 		
 		while (!LiveQueue.isEmpty()){
 			FlowGraphNode n = LiveQueue.poll();
+			if (n == null) break;
 			if (n.LiveAnalysis() == false){
 				for (FlowGraphNode preblock : n.predecessor)
 					LiveQueue.add(preblock);
