@@ -1,16 +1,10 @@
 package minijava.minijava2piglet;
 
-import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.Map;
-
 import minijava.MiniJavaParser;
 import minijava.ParseException;
 import minijava.TokenMgrError;
 import minijava.syntaxtree.Node;
-import minijava.visitor.GJDepthFirst;
 import minijava.visitor.pgVisitor;
 import minijava.pgtree.*;
 import minijava.symboltable.*;
@@ -24,10 +18,11 @@ public class Main {
     	
     	try {
     		
+    		/**
     		FileInputStream fls = new FileInputStream("ucla\\Minijava\\TreeVisitor.java");
     		
     		System.setIn(fls);
-    		
+    		**/
     		
     		Node root = new MiniJavaParser(System.in).Goal();
     		//Traverse the Abstract Grammar Tree

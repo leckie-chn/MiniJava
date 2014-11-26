@@ -59,12 +59,18 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   
 		   // global class table init
 		   // MType.GlobalTableTemp = new pgTemp();
+		   
+		   /**
+		    * delete global class method table, in lab4
+		    * reason: 
 		   pgProcedure Global_Init = MType.Get_Global_Init();
 		   Main.ProgramGoal.AddProcedure(Global_Init);
 		   Main.ProgramGoal.f0.f0.add(new pgMoveStmt(
 				   MType.GlobalTableTemp,
 				   new pgCall(Global_Init.f0)
 				   ));
+				   */
+		   
 		   // local class constructor init
 		   for (Map.Entry<String, MType> entry : MType.RootSymbolTable.entrySet()){
 			   if (entry.getValue() instanceof MClass && entry.getValue() != MType.MainClass)

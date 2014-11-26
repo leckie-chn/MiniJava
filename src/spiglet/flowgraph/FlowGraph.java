@@ -21,16 +21,22 @@ import java.util.Vector;
 
 
 
+
+
+
 import spiglet.kgtree.kgALoadStmt;
 import spiglet.kgtree.kgAStoreStmt;
+import spiglet.kgtree.kgInteger;
 import spiglet.kgtree.kgLabel;
 import spiglet.kgtree.kgMoveStmt;
 import spiglet.kgtree.kgProcedure;
 import spiglet.kgtree.kgReg;
 import spiglet.kgtree.kgSpilledArg;
+import spiglet.stmtnode.spgInteger;
 import spiglet.stmtnode.spgJump;
 import spiglet.stmtnode.spgJumpAble;
 import spiglet.stmtnode.spgLabel;
+import spiglet.stmtnode.spgSimpleExp;
 import spiglet.stmtnode.spgStmtNode;
 import spiglet.stmtnode.spgTempRef;
 import spiglet.visitor.VisitorParameter;
@@ -51,7 +57,7 @@ public class FlowGraph implements VisitorParameter{
 	
 	public final Vector<FlowGraphNode> NodeVec = new Vector<FlowGraphNode>();
 	
-	private spgTempRef RetTemp;
+	private spgSimpleExp RetExpr;
 	
 	private InterfereGraph ITFGraph = null;
 	
@@ -67,8 +73,8 @@ public class FlowGraph implements VisitorParameter{
 		this.RawStmtVec.add(_stmt);
 	}
 	
-	public void SetRetTemp(spgTempRef _ret){
-		this.RetTemp = _ret;
+	public void SetRetTemp(spgSimpleExp _ret){
+		this.RetExpr = _ret;
 	}
 	
 	public void Init(){
@@ -112,8 +118,8 @@ public class FlowGraph implements VisitorParameter{
 					this.ExitNode.isExitNode = true;
 					block.successor.add(ExitNode);
 					this.ExitNode.predecessor.add(block);
-					if (this.RetTemp != null)
-						this.ExitNode.SetRetTemp(RetTemp);
+					if (this.RetExpr != null && this.RetExpr instanceof spgTempRef)
+						this.ExitNode.SetRetTemp((spgTempRef) RetExpr);
 				}
 			}
 		}
@@ -208,17 +214,25 @@ public class FlowGraph implements VisitorParameter{
 					new kgSpilledArg(i + (this.ParaNum > 4 ? this.ParaNum : 4) - 4)
 					));
 		 
-		if (this.RetTemp != null){
-			if (this.RetTemp.register == null)
-				_ret.f4.f0.add(new kgALoadStmt(
-						new kgReg(RegisterRef.VRegs[0]),
-						new kgSpilledArg(this.RetTemp.StackPos)
-						));
-			else
+		if (this.RetExpr != null){
+			if (this.RetExpr instanceof spgTempRef){
+				spgTempRef RetTemp = (spgTempRef) this.RetExpr;
+				if (RetTemp.register == null)
+					_ret.f4.f0.add(new kgALoadStmt(
+							new kgReg(RegisterRef.VRegs[0]),
+							new kgSpilledArg(RetTemp.StackPos)
+							));
+				else
+					_ret.f4.f0.add(new kgMoveStmt(
+							new kgReg(RegisterRef.VRegs[0]),
+							new kgReg(RetTemp.register)
+							));
+			} else if (this.RetExpr instanceof spgInteger){
 				_ret.f4.f0.add(new kgMoveStmt(
 						new kgReg(RegisterRef.VRegs[0]),
-						new kgReg(this.RetTemp.register)
+						new kgInteger(((spgInteger)this.RetExpr).arg)
 						));
+			}
 		}
 		return _ret;
 	}

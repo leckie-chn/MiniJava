@@ -249,7 +249,7 @@ public class MClass extends MType {
 	public pgLabel ConstructorLabel;
 	
 	// Dtable init code
-	public pgStmtList GenGBLInitCode(){
+	public pgTemp GenMethodTable(pgStmtList ConstructorList){
 		pgStmtList _ret = new pgStmtList();
 		pgTemp DtableBase = new pgTemp();
 		boolean DtableFlag [] = new boolean [this.MethodCnt];
@@ -318,14 +318,16 @@ public class MClass extends MType {
 				}
 			}
 		}
-		
+		/**
 		// then Store Dtable Base into global class table
 		_ret.f0.add(new pgHStoreStmt(
 				MType.GlobalTableTemp,
 				new pgIntegerLiteral(this.ClassSerialNo * 4),
 				DtableBase
 				));
-		return _ret;
+				*/
+		ConstructorList.f0.addAll(_ret.f0);
+		return DtableBase;
 	}
 	
 	/**
@@ -334,7 +336,7 @@ public class MClass extends MType {
 	 */
 	public pgProcedure GenConstructorCode(){
 		pgTemp VtableTemp = new pgTemp();
-		pgTemp DtableTemp = new pgTemp();
+		pgTemp DtableTemp = null;
 		pgStmtList _list = new pgStmtList();
 		// allocate space for Vtable
 		_list.f0.add(new pgMoveStmt(
@@ -342,13 +344,15 @@ public class MClass extends MType {
 				new pgHAllocate(new pgIntegerLiteral(this.VarCnt * 4))
 				));
 		
+		/**
 		// get link to Dtable
 		_list.f0.add(new pgHLoadStmt(
 				DtableTemp,
 				MType.GlobalTableTemp,
 				new pgIntegerLiteral(this.ClassSerialNo * 4)
 				));
-		
+		*/
+		DtableTemp = this.GenMethodTable(_list);
 		// store link to Dtable
 		_list.f0.add(new pgHStoreStmt(
 				VtableTemp,

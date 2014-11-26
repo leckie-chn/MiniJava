@@ -131,7 +131,12 @@ public class MType {
 	/**************************************** code for lab2 ************************************************/
 	private static int GlobalClassCnt = 0;
 	
-	public static pgTemp GlobalTableTemp;
+	/**
+	 * deprecate global table temp, for this will cause problem in lab4: kanga 
+	 * 
+	 * public static pgTemp GlobalTableTemp;
+	 
+	
 	
 	public static pgProcedure Get_Global_Init(){
 		pgStmtList StmtList = new pgStmtList();
@@ -166,7 +171,7 @@ public class MType {
 						)
 				);
 	}
-	
+	*/
 	/******************************************** code for lab3 *********************************************/
 	
 	public static pgTemp ConstOne = null;

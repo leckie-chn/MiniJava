@@ -232,7 +232,9 @@ public class SPGVisitor extends GJDepthFirst<spgRoot, VisitorParameter> {
 		   spgSimpleExp _ret = (spgSimpleExp) n.f3.accept(this, argu);
 		   FlowGraph graph = (FlowGraph) argu;
 		   if (_ret instanceof spgTempRef)
-			   graph.SetRetTemp((spgTempRef) _ret);
+			   graph.SetRetTemp(_ret);
+		   else if (_ret instanceof spgInteger)
+			   graph.SetRetTemp(_ret);
 		   return null;
 	   }
 
