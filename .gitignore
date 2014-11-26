@@ -1,5 +1,8 @@
 /bin
 *.pg
 *.txt
+*.spg
+*.jar
+test*
 /tests
 /ucla
