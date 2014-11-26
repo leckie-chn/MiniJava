@@ -20,7 +20,7 @@ public class FlowGraphNode {
 	
 	public final Vector<FlowGraphNode> predecessor = new Vector<FlowGraphNode>();
 	
-	private Set<spgTempRef> InAliveSet;
+	private Set<spgTempRef> InAliveSet = null;
 	
 	private Set<spgTempRef> OutALiveSet;
 	
@@ -42,20 +42,23 @@ public class FlowGraphNode {
 	public boolean LiveAnalysis(){
 		if (this.isExitNode == true) {
 			this.InAliveSet = new HashSet<spgTempRef>();
-			this.InAliveSet.add(this.RetTemp);
-			return true;
+			if (this.RetTemp != null)
+				this.InAliveSet.add(this.RetTemp);
+			return false; // should return false, if return true, the iteration will not flow around
 		}
 		
 		int NodeSize = this.FlowVec.size() - 1;
 		this.OutALiveSet = this.FlowVec.lastElement().AliveSet;
-		
+		this.OutALiveSet.clear();
 		for (FlowGraphNode next : this.successor){
-			this.OutALiveSet.addAll(next.GetInAlive());
+			if (next.GetInAlive() != null)
+				this.OutALiveSet.addAll(next.GetInAlive());
 		}
 		
 		for (int i = NodeSize - 1; i >= 0; i--){
 			ProgramStatus current = this.FlowVec.elementAt(i);
 			ProgramStatus next = this.FlowVec.elementAt(i + 1);
+			current.AliveSet.clear();
 			current.AliveSet.addAll(next.AliveSet);
 			if (current.Statement.TargetOperand != null){
 				current.AliveSet.remove(current.Statement.TargetOperand);
@@ -76,8 +79,14 @@ public class FlowGraphNode {
 			}
 		}
 		
-		boolean isStable = this.InAliveSet != null && this.InAliveSet.equals(this.FlowVec.elementAt(0).AliveSet);
-		this.InAliveSet = this.FlowVec.elementAt(0).AliveSet;
+		boolean isStable = (this.InAliveSet != null) && this.InAliveSet.containsAll(this.FlowVec.elementAt(0).AliveSet) && this.FlowVec.elementAt(0).AliveSet.containsAll(this.InAliveSet);
+		
+		if (this.InAliveSet == null){
+			this.InAliveSet = new HashSet<spgTempRef>();
+		} else
+			this.InAliveSet.clear();
+		this.InAliveSet.addAll(this.FlowVec.elementAt(0).AliveSet);
+				
 		
 		return isStable;
 	}

@@ -52,7 +52,7 @@ public class SPGVisitor extends GJDepthFirst<spgRoot, VisitorParameter> {
 	    * f4 -> <EOF>
 	    */
 	   public spgRoot visit(Goal n, VisitorParameter argu) {
-		   FlowGraph graph = new FlowGraph(new spgLabel("main"), 0);
+		   FlowGraph graph = new FlowGraph(new spgLabel("MAIN"), 0);
 		   FlowGraph.GlobalFlowGraphVec.add(graph);
 		   n.f1.accept(this, graph);	     
 		   n.f3.accept(this, argu);

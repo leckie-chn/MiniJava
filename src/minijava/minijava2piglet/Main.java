@@ -24,7 +24,7 @@ public class Main {
     	
     	try {
     		
-    		FileInputStream fls = new FileInputStream("test.java");
+    		FileInputStream fls = new FileInputStream("ucla\\Minijava\\TreeVisitor.java");
     		
     		System.setIn(fls);
     		

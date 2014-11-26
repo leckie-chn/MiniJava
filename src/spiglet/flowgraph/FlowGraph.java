@@ -1,14 +1,33 @@
 package spiglet.flowgraph;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Vector;
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+import spiglet.kgtree.kgALoadStmt;
+import spiglet.kgtree.kgAStoreStmt;
+import spiglet.kgtree.kgLabel;
+import spiglet.kgtree.kgMoveStmt;
+import spiglet.kgtree.kgProcedure;
+import spiglet.kgtree.kgReg;
+import spiglet.kgtree.kgSpilledArg;
 import spiglet.stmtnode.spgJump;
 import spiglet.stmtnode.spgJumpAble;
 import spiglet.stmtnode.spgLabel;
@@ -24,7 +43,7 @@ public class FlowGraph implements VisitorParameter{
 	
 	public final spgLabel ProcedureName;
 	
-	public final int ParaNum;
+	public final int ParaNum;  // denotes the number of paranumber 
 	
 	public final Map<String, FlowGraphNode> BLMapping = new HashMap<String, FlowGraphNode>();
 	
@@ -34,9 +53,14 @@ public class FlowGraph implements VisitorParameter{
 	
 	private spgTempRef RetTemp;
 	
+	private InterfereGraph ITFGraph = null;
+	
+	private final Set<RegisterRef> CalleeSave = new HashSet<RegisterRef>();
+	
 	public FlowGraph(spgLabel _label, int _num){
 		this.ProcedureName = _label;
 		this.ParaNum = _num;
+		this.StackPosCnt = (_num - 4 > 0 ) ? _num - 4 : 0;	// set the stack position count
 	}
 	
 	public void AddStmtNode(spgStmtNode _stmt){
@@ -101,12 +125,13 @@ public class FlowGraph implements VisitorParameter{
 		this.EntryNode = this.NodeVec.elementAt(0);
 	}
 	
+	@SuppressWarnings("unused")
 	public void LiveAnalysis(){
 		Queue<FlowGraphNode> LiveQueue = new LinkedList<FlowGraphNode>();
 		LiveQueue.add(this.ExitNode);
-		
-		while (!LiveQueue.isEmpty()){
+		while (LiveQueue.isEmpty() == false){
 			FlowGraphNode n = LiveQueue.poll();
+			spgLabel label = n.LeadingLabel;
 			if (n == null) break;
 			if (n.LiveAnalysis() == false){
 				for (FlowGraphNode preblock : n.predecessor)
@@ -114,6 +139,90 @@ public class FlowGraph implements VisitorParameter{
 			}
 		}
 	}
+	
+	
+	public void DoRegAllocation(){
+		this.ITFGraph = new InterfereGraph(this);
+		this.ITFGraph.DoColor();
+		this.ITFGraph.BindReg(this.CalleeSave);
+		this.StackPosCnt += this.CalleeSave.size();
+		this.ITFGraph.SpillStack(this);
+	}
+	
+	
+	// procedure translation part
+	
+	public int StackPosCnt;
+	
+	public kgProcedure DoTranslation(){
+		kgProcedure _ret = new kgProcedure(new kgLabel(this.ProcedureName.arg), this.ParaNum, this.StackPosCnt + 10);
+		_ret.f3 = 0; 
+		
+		// arg load
+		for (int i = 0; i < this.ParaNum; i++){
+			spgTempRef paratemp = spgTempRef.GetTempByNum(i);
+			RegisterRef target = paratemp.register;
+			if (target == null){
+				if (paratemp.StackPos < 0) continue;
+				target = RegisterRef.VRegs[1];
+			}
+			if (i < 4)
+				_ret.f4.f0.add(new kgMoveStmt(
+						new kgReg(target),
+						new kgReg(RegisterRef.ARegs[i])
+						));
+			else 
+				_ret.f4.f0.add(new kgALoadStmt(
+						new kgReg(target),
+						new kgSpilledArg(i - 4)
+						));
+			if (paratemp.register == null)
+				_ret.f4.f0.add(new kgAStoreStmt(
+						new kgSpilledArg(paratemp.StackPos),
+						new kgReg(target)
+						));
+		}
+		
+		// callee save 
+		kgReg [] RegArray = new kgReg [this.CalleeSave.size()];
+		
+		int ArrCnt = 0;
+		
+		for (RegisterRef _reg : this.CalleeSave)
+			RegArray[ArrCnt++] = new kgReg(_reg);
+		
+		for (int i = 0; i < RegArray.length; i++)
+			_ret.f4.f0.add(new kgAStoreStmt(
+					new kgSpilledArg(i + (this.ParaNum > 4 ? this.ParaNum : 4) - 4),
+					RegArray[i]
+					));
+		
+		for (spgStmtNode stmt : this.RawStmtVec)
+			stmt.DoTranslation(_ret);
+		
+		
+		// callee restore
+		for (int i = RegArray.length - 1; i >= 0; i--)
+			_ret.f4.f0.add(new kgALoadStmt(
+					RegArray[i],
+					new kgSpilledArg(i + (this.ParaNum > 4 ? this.ParaNum : 4) - 4)
+					));
+		 
+		if (this.RetTemp != null){
+			if (this.RetTemp.register == null)
+				_ret.f4.f0.add(new kgALoadStmt(
+						new kgReg(RegisterRef.VRegs[0]),
+						new kgSpilledArg(this.RetTemp.StackPos)
+						));
+			else
+				_ret.f4.f0.add(new kgMoveStmt(
+						new kgReg(RegisterRef.VRegs[0]),
+						new kgReg(this.RetTemp.register)
+						));
+		}
+		return _ret;
+	}
+	
 	
 	// not a part of flowgraph, strictly
 	public boolean InStmtList = false;
