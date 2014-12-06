@@ -1,10 +1,13 @@
 package kanga.kanga2mips;
 
+import java.io.FileInputStream;
+
 import kanga.KangaParser;
 import kanga.ParseException;
 import kanga.TokenMgrError;
 import kanga.syntaxtree.Node;
 import kanga.visitor.GJDepthFirst;
+import kanga.visitor.MipsVisitor;
 
 public class Main {
 
@@ -14,10 +17,7 @@ public class Main {
 			/*
 			 * TODO: Implement your own Visitors and other classes.
 			 */
-			GJDepthFirst v = new GJDepthFirst<Object, Object>() {
-			};
-			// Traverse the Abstract Grammar Tree
-			root.accept(v, null);
+			root.accept(new MipsVisitor());
 		} catch (TokenMgrError e) {
 			// Handle Lexical Errors
 			e.printStackTrace();
