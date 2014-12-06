@@ -24,12 +24,7 @@ public class spgCall extends spgStmtNode {
 	
 	@Override
 	public void DoTranslation(kgProcedure context){ 
-		// caller save registers
-		for (int i = 0; i < 10; i++)
-			context.f4.f0.add(new kgAStoreStmt(
-					new kgSpilledArg(i + context.f2 - 10),
-					new kgReg(RegisterRef.TRegs[i])
-					));
+		
 		
 		// pass arguments
 		if (context.f3 < this.ParaTable.size())
@@ -64,17 +59,8 @@ public class spgCall extends spgStmtNode {
 			subroutine = this.GetReg(context, (spgTempRef)this.SrcOperand1, 1);
 		context.f4.f0.add(new kgCallStmt(subroutine));
 		
-		
-		
-		// caller restore registers
-		for (int i = 9; i >= 0; i--)
-			context.f4.f0.add(new kgALoadStmt(
-					new kgReg(RegisterRef.TRegs[i]),
-					new kgSpilledArg(i + context.f2 - 10)
-					));
-		
-		RegisterRef target = this.TargetOperand.register;
-		if (target == null){
+		// move return value
+		if (this.TargetOperand.register == null){
 			context.f4.f0.add(new kgAStoreStmt(
 					new kgSpilledArg(this.TargetOperand.StackPos),
 					new kgReg(RegisterRef.VRegs[0])
@@ -84,6 +70,8 @@ public class spgCall extends spgStmtNode {
 					new kgReg(this.TargetOperand.register),
 					new kgReg(RegisterRef.VRegs[0])
 					));
+		
+		
 		
 	}
 }

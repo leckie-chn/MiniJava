@@ -48,11 +48,14 @@ public class InterfereGraphNode {
 			if (color < 0){
 				temp.register = null;
 			}
-			else if (color < 10)
-				temp.register = RegisterRef.TRegs[color];
-			else {
-				temp.register = RegisterRef.SRegs[color - 10];
-				calleesave.add(temp.register);
+			else{ 
+				if (color < 10){
+					temp.register = RegisterRef.TRegs[color];
+				}
+				else {
+					temp.register = RegisterRef.SRegs[color - 10];
+					calleesave.add(temp.register);
+				}
 			}
 		}
 	}

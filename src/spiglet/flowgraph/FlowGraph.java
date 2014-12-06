@@ -24,14 +24,20 @@ import java.util.Vector;
 
 
 
+
+
+
 import spiglet.kgtree.kgALoadStmt;
 import spiglet.kgtree.kgAStoreStmt;
+import spiglet.kgtree.kgBinOp;
+import spiglet.kgtree.kgCallStmt;
 import spiglet.kgtree.kgInteger;
 import spiglet.kgtree.kgLabel;
 import spiglet.kgtree.kgMoveStmt;
 import spiglet.kgtree.kgProcedure;
 import spiglet.kgtree.kgReg;
 import spiglet.kgtree.kgSpilledArg;
+import spiglet.kgtree.kgStmt;
 import spiglet.stmtnode.spgInteger;
 import spiglet.stmtnode.spgJump;
 import spiglet.stmtnode.spgJumpAble;
@@ -203,8 +209,44 @@ public class FlowGraph implements VisitorParameter{
 					RegArray[i]
 					));
 		
+		
+		RegisterRef.ClearCallerSave();
+		// do translation
 		for (spgStmtNode stmt : this.RawStmtVec)
 			stmt.DoTranslation(_ret);
+		
+		// do caller save
+		// first. scan the entire whole statement list, automated by kgReg Constructor function
+		// second, scan the entire whole statement list, find the call statement, and insert the caller save & restore statement
+		
+		Vector<kgCallStmt> StmtList = new Vector<kgCallStmt>();
+		
+		for (kgStmt stmt : _ret.f4.f0)
+			if (stmt instanceof kgCallStmt)
+				StmtList.add((kgCallStmt)stmt);
+		for (kgCallStmt stmt : StmtList){
+			int callindex = _ret.f4.f0.indexOf(stmt);
+			// caller restore first
+			for (int i = 0 ; i < 10; i++)
+				if (RegisterRef.CallerSaveFlag[i] == true){
+					_ret.f4.f0.insertElementAt(new kgALoadStmt(
+							new kgReg(RegisterRef.TRegs[i]),
+							new kgSpilledArg(i + _ret.f2 - 10)
+							),
+							callindex + 1); 
+				}
+			
+			// then caller save
+			for (int i = 9; i >= 0; i--)
+				if (RegisterRef.CallerSaveFlag[i] == true){
+					_ret.f4.f0.insertElementAt(new kgAStoreStmt(
+							new kgSpilledArg(i + _ret.f2 - 10),
+							new kgReg(RegisterRef.TRegs[i])
+							),
+							callindex);
+				}
+			
+		}
 		
 		
 		// callee restore
@@ -236,7 +278,6 @@ public class FlowGraph implements VisitorParameter{
 		}
 		return _ret;
 	}
-	
 	
 	// not a part of flowgraph, strictly
 	public boolean InStmtList = false;

@@ -12,6 +12,7 @@ public class kgReg implements kgSimpleExp {
 	
 	public kgReg(RegisterRef _f0){
 		this.f0 = _f0;
+		RegisterRef.CallerSaveFlag[_f0.GetIndex()] = true;
 	}
 	
 	@Override

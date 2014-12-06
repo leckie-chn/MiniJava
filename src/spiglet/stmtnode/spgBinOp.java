@@ -32,7 +32,7 @@ public class spgBinOp extends spgStmtNode {
 		if (this.SrcOperand2 instanceof spgInteger)
 			src2 = new kgInteger(((spgInteger)this.SrcOperand2).arg);
 		else
-			src2 = this.GetReg(context, (spgTempRef)this.SrcOperand2, 1);
+			src2 = this.GetReg(context, (spgTempRef)this.SrcOperand2, 2);
 		
 		context.f4.f0.add(new kgMoveStmt(
 				new kgReg(target),

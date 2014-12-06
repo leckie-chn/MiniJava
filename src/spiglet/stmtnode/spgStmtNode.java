@@ -24,11 +24,17 @@ public class spgStmtNode implements spgRoot {
 		
 	}
 	
+	// warning: for src register only
 	protected kgReg GetReg(kgProcedure context, spgTempRef temp, int vindex){
 		if (temp.register != null)
 			return new kgReg(temp.register);
 		else {
-			kgReg _ret = new kgReg(RegisterRef.VRegs[vindex]); 
+			kgReg _ret = null;
+			if (vindex == 2){
+				_ret = new kgReg(RegisterRef.ARegs[0]);
+			} else {
+				_ret = new kgReg(RegisterRef.VRegs[vindex]);
+			}
 			context.f4.f0.add(new kgALoadStmt(
 					_ret,
 					new kgSpilledArg(temp.StackPos)

@@ -29,7 +29,7 @@ public class spgAllocate extends spgStmtNode {
 			src = new kgInteger(((spgInteger)this.SrcOperand1).arg);
 		else {
 			spgTempRef temp = (spgTempRef) this.SrcOperand1;
-			src = this.GetReg(context, temp, 1);
+			src = this.GetReg(context, temp, 0);
 		}
 		
 		// move stmt itself

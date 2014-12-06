@@ -21,11 +21,10 @@ public class Main {
  
     public static void main(String[] args) {
     	try {
-    		/**
-    		FileInputStream fls = new FileInputStream("Factorial.spg");
+    		
+    		FileInputStream fls = new FileInputStream("SRegTest.spg");
     		
     		System.setIn(fls);
-    		**/
     		RegisterRef.init();
     		
     		Node root = new SpigletParser(System.in).Goal();
