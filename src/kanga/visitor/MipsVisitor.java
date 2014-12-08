@@ -159,10 +159,11 @@ public class MipsVisitor extends GJNoArguDepthFirst<kgExprBase> {
 		   
 		   System.out.printf("\n\n\t\t.text\n\t\t.globl\t%s\n", ProcedureName.toString());
 		   System.out.printf("%s:\n", ProcedureName.toString());
-		   System.out.printf("\t\tsw $fp, -8($sp)\n");
-		   System.out.printf("\t\tsw $ra, -4($sp)\n");
-		   System.out.printf("\t\tadd $fp, $zero, $sp\n");
 		   System.out.printf("\t\taddi $sp, $sp, %d\n", -1 * stackspace);
+		   System.out.printf("\t\tsw $fp, %d($sp)\n", stackspace - 8);
+		   System.out.printf("\t\tsw $ra, %d($sp)\n", stackspace - 4);
+		   System.out.printf("\t\taddi $fp, $sp, %d\n", stackspace);
+		   
 		   
 		   n.f10.accept(this);
 		   
@@ -378,7 +379,7 @@ public class MipsVisitor extends GJNoArguDepthFirst<kgExprBase> {
 			   offset = spilled.GetArgPosition() * 4;
 		   } else {
 			   // others
-			   offset = (spilled.GetArgPosition() - this.OverFlowArgNumber + 2) *(-4);
+			   offset = (spilled.GetArgPosition() - this.OverFlowArgNumber + 3) *(-4);
 		   }
 		   System.out.printf("\t\tlw %s, %d($fp)\n", dest.GetRegName(), offset);
 		   return null;
@@ -393,7 +394,7 @@ public class MipsVisitor extends GJNoArguDepthFirst<kgExprBase> {
 		   kgSpilledArg spilled = (kgSpilledArg) n.f1.accept(this);
 		   kgReg src = (kgReg) n.f2.accept(this);
 		   
-		   int offset = (spilled.GetArgPosition() - this.OverFlowArgNumber + 2) * (-4);
+		   int offset = (spilled.GetArgPosition() - this.OverFlowArgNumber + 3) * (-4);
 		   System.out.printf("\t\tsw %s, %d($fp)\n", src.GetRegName(), offset);
 		   return null;
 	   }
