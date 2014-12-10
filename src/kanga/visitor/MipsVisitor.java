@@ -41,6 +41,7 @@ import kanga.syntaxtree.StmtList;
 public class MipsVisitor extends GJNoArguDepthFirst<kgExprBase> {
 	
 	// used for stack translation from kanga to mips
+	// it is the overflowed arg number of the sub routine
 	private int OverFlowArgNumber = 0;
 	
 	private boolean isListEle = false;
@@ -67,9 +68,13 @@ public class MipsVisitor extends GJNoArguDepthFirst<kgExprBase> {
 		   
 		   kgInteger StackNum = (kgInteger) n.f5.accept(this);
 		   
-		   this.OverFlowArgNumber = ArgNum.GetValue() - 4;
+		   kgInteger MaxSubArgNum = (kgInteger) n.f8.accept(this);
 		   
-		   int stackspace = (StackNum.GetValue() - this.OverFlowArgNumber + 2) * 4;
+		   int OFSubArgNum = (MaxSubArgNum.GetValue() < 4) ? 0 : (MaxSubArgNum.GetValue() - 4);
+		   
+		   this.OverFlowArgNumber = (ArgNum.GetValue() < 4) ? 0 : ArgNum.GetValue() - 4;
+		   
+		   int stackspace = (StackNum.GetValue() - this.OverFlowArgNumber + OFSubArgNum + 2) * 4;
 		   
 		   System.out.printf("\t\t.text\n\t\t.globl\t%s\n", ProcedureName.toString());
 		   System.out.printf("%s:\n", ProcedureName.toString());
@@ -153,9 +158,13 @@ public class MipsVisitor extends GJNoArguDepthFirst<kgExprBase> {
 		   
 		   kgInteger StackNum = (kgInteger) n.f5.accept(this);
 		   
-		   this.OverFlowArgNumber = ArgNum.GetValue() - 4;
+		   kgInteger MaxSubArgNum = (kgInteger) n.f8.accept(this);
 		   
-		   int stackspace = (StackNum.GetValue() - this.OverFlowArgNumber + 2) * 4;
+		   int OFSubArgNum = (MaxSubArgNum.GetValue() < 4) ? 0 : (MaxSubArgNum.GetValue() - 4);
+		   
+		   this.OverFlowArgNumber = (ArgNum.GetValue() < 4) ? 0 : ArgNum.GetValue() - 4;
+		   
+		   int stackspace = (StackNum.GetValue() - this.OverFlowArgNumber + OFSubArgNum + 2) * 4;
 		   
 		   System.out.printf("\n\n\t\t.text\n\t\t.globl\t%s\n", ProcedureName.toString());
 		   System.out.printf("%s:\n", ProcedureName.toString());
