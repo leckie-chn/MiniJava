@@ -15,7 +15,7 @@ while [ $i -ne 8 ]
 do
 	PROG=${PROGRAM[$i]}
 	echo -e $PROG".s\n"
-	java -jar mpc.jar < ucla/kanga/$PROG.kg > $PROG.s  
+	java -jar cc.jar < ucla/Minijava/$PROG.java > $PROG.s 
 	i=$(($i+1))
 done
 

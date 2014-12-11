@@ -4,5 +4,6 @@
 *.spg
 *.kg
 *.jar
+*.s
 /tests
 /ucla
