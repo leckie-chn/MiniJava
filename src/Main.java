@@ -12,7 +12,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		PrintStream stdout = System.out;
-		InputStream stdin = System.in;
+		PrintStream stderr = System.err;
 		
 		boolean debug = false;
 		
@@ -24,9 +24,9 @@ public class Main {
 		minijava.minijava2piglet.Main.main(null);
 		
 		if (debug == true){
-			stdout.println("spiglet code:");
-			stdout.println(spgStream.toString());
-			stdout.println();
+			stderr.println("spiglet code:");
+			stderr.println(spgStream.toString());
+			stderr.println();
 		}
 		// spiglet => kanga
 		ByteArrayInputStream kgInput = new ByteArrayInputStream(spgStream.toByteArray());
@@ -40,9 +40,9 @@ public class Main {
 		spiglet.spiglet2kanga.Main.main(null);
 		
 		if (debug == true){
-			stdout.println("kanga code:");
-			stdout.println(kgOutput.toString());
-			stdout.println();
+			stderr.println("kanga code:");
+			stderr.println(kgOutput.toString());
+			stderr.println();
 		}
 		// kanga => mips
 		System.setOut(stdout);

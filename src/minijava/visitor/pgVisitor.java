@@ -734,7 +734,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 		   pgTemp MAddrTemp = new pgTemp();
 		   pgLabel L1 = new pgLabel();
 		   
-		   /**
+		   
 		   pgTemp ErrorTemp = new pgTemp();
 		   
 		   context._list.f0.add(new pgMoveStmt(
@@ -750,7 +750,7 @@ public class pgVisitor extends GJDepthFirst<pgNode, MType> {
 				   L1
 				   ));
 		   context._list.f0.add(new pgErrorStmt());
-		   **/
+		   
 		   
 		   context._list.f0.add(L1);
 		   context._list.f0.add(new pgHLoadStmt(
